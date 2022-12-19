@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    
+    <title>Title</title>
+    <link rel="stylesheet" href="all.css">
+    <link rel="stylesheet" href="fonts.css">
+    <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <nav id="sidebar">
+      <div class="sidebar-scroll">
+	<ul th:replace="fragments/book-navigation.html :: test (${entries}, 0)"></ul>
+      </div>
+    </nav>
+    
+    <main>
+      <div id="topbar">
+	<div class="topbar-buttons">
+	  <button id="toggle-sidebar" class="topbar-button" type="button" title="Toggle Sidebar">
+	    <i class="fa-solid fa-bars"></i>
+	  </button>
+	</div>
+	<h1 class="topbar-title">Notes Title</h1>
+        <div class="topbar-buttons">
+          <button class="topbar-button" type="button" onclick="location.href='/'">
+	    <i class="fa-solid fa-house"></i>
+	  </button>
+	</div>
+      </div>
+      <div class="content-wrap">
+	<div class="content">
+	  <!-- <p th:utext="${entries[0].content}"></p> -->
+	</div>
+      </div>
+    </main>
+  </body>
+  <script>
+    var html = document.querySelector("html");
+    var sidebar = document.getElementById("sidebar");
+    var sidebarButton = document.getElementById("toggle-sidebar");
+
+    sidebarButton.addEventListener('click', function sidebarToggle() {
+	html.classList.toggle('sidebar-hidden');
+    });
+  </script>
+</html>

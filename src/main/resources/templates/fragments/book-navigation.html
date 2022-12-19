@@ -1,0 +1,10 @@
+<ul class="side-list" th:fragment="test (entries, depth)">
+  <th:block th:each="entry : ${entries}">
+    <li class="sidebar-lvl-1">
+      <p th:text="${entry.noteid}"></p>
+      <!-- <a th:text="${entry.title}" th:href="@{/{x}/{y}(x=${entry.moduleCode}, y=${entry.title})}"></a> -->
+      
+      <ul th:replace=":: test (${entry.children}, ${depth}+1)">
+    </li>
+  </th:block>
+</ul>
