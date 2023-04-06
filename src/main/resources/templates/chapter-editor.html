@@ -1,0 +1,200 @@
+<html layout:decorate="~{layouts/main.html}">
+  <th:block layout:fragment="extra-head">
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+  </th:block>
+
+  <div layout:fragment="sidebar-options"
+       class="move-buttons-group">
+    <div class="move-up">
+      <button class="icon-button" id="move-up" type="button">
+	<i class="fa-solid fa-up-long"></i>
+      </button>
+    </div>
+    <div class="move-right">
+      <button class="icon-button move-right" id="move-in" type="button">
+	<i class="fa-solid fa-right-long"></i>
+      </button>
+    </div>
+    <div class="move-left">
+      <button class="icon-button move-left" id="move-out" type="button">
+	<i class="fa-solid fa-left-long"></i>
+      </button>
+    </div>
+    <div class="move-down">
+      <button class="icon-button move-down" id="move-down" type="button">
+	<i class="fa-solid fa-down-long"></i>
+      </button>
+    </div>
+  </div>
+
+  <div layout:fragment="content"
+       class="content editing">
+    <form method="POST" th:object="${chapterObj}">
+      <input id="edit-title" class="basic-input" type="text" th:field="*{title}" autofocus />
+      <textarea id="edit-content" type="text" rows="5" th:field="*{mdContent}"></textarea>
+
+      <input id="parent-id" type="hidden" th:field="*{parentID}" />
+      <input id="preceding-id" type="hidden" th:field="*{precedingID}" />
+
+      <div class="edit-buttons-group">
+	<button class="icon-button" type="submit">
+	  <i class="fa-solid fa-floppy-disk"></i>
+	</button>
+	<button class="icon-button" type="button" id="preview-button">
+	  <i id="preview-icon" class="fa-solid fa-eye"></i>
+	  <i id="no-preview-icon" class="fa-solid fa-eye-slash" style="display: none"></i>
+	</button>
+	<button class="icon-button" type="submit" id="delete-button"
+		th:formaction="|/delete/chapter?id=${chapterObj.id}|">
+	  <i class="fa-solid fa-trash-can"></i>
+	</button>
+      </div>
+    </form>
+  </div>
+
+  <th:block layout:fragment="extra-scripts">
+    <script>
+      var mde = new EasyMDE({ element: document.getElementById("edit-content"),
+			      shortcuts: {"togglePreview": "Ctrl-Alt-P"},
+			      placeholder: "Content...",
+			      maxHeight: "70vh",
+			      toolbar: false,
+			      status: false,
+			      renderingConfig: {markedOptions: {gfm: false}} // GitHub-flavoured markdown is off.
+			    });
+
+      var isPreview = false;
+      var previewButton = document.getElementById("preview-button");
+      previewButton.addEventListener('click', function togglePreview() {
+	  mde.togglePreview();
+
+	  if (!isPreview) {
+	      isPreview = true;
+	      document.getElementById("preview-icon").setAttribute("style", "display: none");
+	      document.getElementById("no-preview-icon").removeAttribute("style");
+	  } else {
+	      isPreview = false;
+	      document.getElementById("preview-icon").removeAttribute("style");
+	      document.getElementById("no-preview-icon").setAttribute("style", "display: none");
+	  }
+
+	  MathJax.typeset();
+      });
+    </script>
+
+    <script>
+      var html = document.querySelector("html");
+
+      var parentIdTextElement = document.getElementById("parent-id");
+      var precedingIdTextElement = document.getElementById("preceding-id");
+
+      if (document.getElementById("sidebar-active") == null || typeof(document.getElementById("sidebar-active")) == "undefined") {
+	  // Creating a new chapter; need placeholder element to enable ordering:
+	  var placeholderContents = document.createElement("a");
+	  placeholderContents.innerHTML = "New Chapter";
+	  placeholderContents.id = "sidebar-active";
+	  placeholderContents.className = document.getElementById(precedingIdTextElement.value).firstElementChild.className;
+
+	  var placeholder = document.createElement("li");
+	  placeholder.appendChild(placeholderContents);
+
+	  var placeholderParent = document.getElementById(precedingIdTextElement.value).parentElement;
+	  placeholderParent.appendChild(placeholder);
+      }
+
+      var movableElement = document.getElementById("sidebar-active").parentElement;
+      var movableElementText = document.getElementById("sidebar-active");
+
+      window.addEventListener("load", (event) => {
+	  // init parent-id
+	  parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+
+	  // init preceding-id
+	  if (movableElement.previousElementSibling != null) {
+	      precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+	  } else {
+	      precedingIdTextElement.removeAttribute("value");
+	  }
+      });
+
+      window.addEventListener("unload", (event) => {
+	  document.getElementById("delete-button").click();
+      });
+
+      var titleTextElement = document.getElementById("edit-title");
+      titleTextElement.addEventListener("keyup", (event) => {
+	  if (titleTextElement.value) {
+	      movableElementText.innerHTML = titleTextElement.value;
+	  } else {
+	      movableElementText.innerHTML = "New Chapter";
+	  }
+      });
+
+      var upButton = document.getElementById("move-up");
+      var inButton = document.getElementById("move-in");
+      var outButton = document.getElementById("move-out");
+      var downButton = document.getElementById("move-down");
+
+      upButton.addEventListener('click', function up() {
+	  movableElement.parentElement.insertBefore(movableElement, movableElement.previousElementSibling);
+	  parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+	  if (movableElement.previousElementSibling != null) {
+	      precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+	  } else {
+	      precedingIdTextElement.removeAttribute("value");
+	  }
+      });
+
+      inButton.addEventListener('click', function moveIn() {
+	  if (movableElement.previousElementSibling == null) return;
+
+	  if (movableElement.previousElementSibling.lastElementChild.tagName.toLowerCase() != "ul") {
+	      // Need to create a sub-list:
+	      var subList = document.createElement("ul");
+	      subList.className = "side-list";
+	      movableElement.previousElementSibling.appendChild(subList);
+	  }
+	  movableElement.previousElementSibling.lastElementChild.appendChild(movableElement);
+
+	  // Adjust class:
+	  switch (document.getElementById("sidebar-active").className) {
+	  case "sidebar-lvl-0":
+	      document.getElementById("sidebar-active").className = "sidebar-lvl-1";
+	      break;
+	  case "sidebar-lvl-1":
+	      document.getElementById("sidebar-active").className = "sidebar-lvl-deep";
+	      break;
+	  }
+
+	  // Adjust inputs:
+	  parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+	  precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+      });
+
+      outButton.addEventListener('click', function moveOut() {
+	  if (movableElement.parentElement.parentElement.tagName.toLowerCase() == "li") {
+	      movableElement.parentElement.parentElement.parentElement.insertBefore(movableElement, movableElement.parentElement.parentElement.nextElementSibling);
+	      parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+	      precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+	  }
+
+	  // Adjust class:
+	  switch (document.getElementById("sidebar-active").className) {
+	  case "sidebar-lvl-1":
+	      document.getElementById("sidebar-active").className = "sidebar-lvl-0";
+	      break;
+	  case "sidebar-lvl-deep":
+	      document.getElementById("sidebar-active").className = "sidebar-lvl-1";
+	      break;
+	  }
+      });
+
+      downButton.addEventListener('click', function down() {
+	  movableElement.parentElement.insertBefore(movableElement, movableElement.nextElementSibling.nextElementSibling);
+	  parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+	  precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+      });
+    </script>
+  </th:block>
+</html>

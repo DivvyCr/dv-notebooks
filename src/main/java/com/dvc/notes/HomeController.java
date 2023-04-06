@@ -1,10 +1,27 @@
 package com.dvc.notes;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
@@ -15,21 +32,14 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-	String moduleQuery = "SELECT * FROM modules";
-	model.addAttribute("modules", jdbcTemplate.query(moduleQuery, new ModuleRowMapper()));
+	List<Book> storedBooks = jdbcTemplate.query("SELECT * FROM books", new BookRowMapper());
+	model.addAttribute("books", storedBooks);
 	return "index";
     }
 
-    @GetMapping("/CS{moduleCode}")
-    public String test(@PathVariable String moduleCode, Model model) {
-	NavigationRowMapper nrm = new NavigationRowMapper();
-
-	String initNavQuery = "WITH x AS (SELECT parent_noteid, array_agg(noteid) FROM nav WHERE parent_noteid IS NOT NULL GROUP BY parent_noteid) SELECT noteid,COALESCE(array_agg, array[]::integer[]) AS children,priority AS order FROM nav LEFT JOIN x ON nav.noteid=x.parent_noteid";
-	jdbcTemplate.query(initNavQuery, nrm);
-
-	String renderNavQuery = "WITH x AS (SELECT parent_noteid, array_agg(noteid) FROM nav WHERE parent_noteid IS NOT NULL GROUP BY parent_noteid), y AS (SELECT array_agg(noteid) FROM nav WHERE parent_noteid IS NOT NULL) SELECT noteid,COALESCE(x.array_agg, array[]::integer[]) AS children,priority AS order FROM nav LEFT JOIN x ON nav.noteid=x.parent_noteid CROSS JOIN y WHERE nav.noteid != ALL(y.array_agg)";
-	model.addAttribute("entries", jdbcTemplate.query(renderNavQuery, nrm));
-	return "book";
+    @GetMapping("/login")
+    public String temp2(Model model) {
+	return "login";
     }
 
 }

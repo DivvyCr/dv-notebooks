@@ -1,31 +1,24 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    
-    <title>Title</title>
-    <link rel="stylesheet" href="all.css">
-  </head>
-  <body>
-    <div id="topbar">
-      <h1 class="topbar-title">Warwick Notes</h1>
-    </div>
-    
-    <div class="content-wrap">
-      <div class="content">
-	<h1>Welcome!</h1>
-	<p>Welcome to my notes for Computer Science.</p>
+<html layout:decorate="~{layouts/base.html}">
+  <div layout:fragment="content"
+       class="content">
+    <h1>Welcome!</h1>
+    <p>Welcome to my notes for Computer Science.</p>
 
-	<div class="menu">
-	  <th:block th:each="module : ${modules}">
-	    <button class="menu-button" type="button"
-		    th:onclick="'location.href=\'' + @{/{x}(x=${module.code})} + '\''">
-	      <h2 th:text="${module.name}">course</h2>
-	      <p th:text="${module.code}">description</p>
-	    </button>
-	  </th:block>
-	</div>
-      </div>
+    <div class="menu">
+      <th:block th:each="book : ${books}">
+	<button class="menu-button" type="button"
+		th:onclick="'location.href=\'' + @{/read/{x}(x=${book.code})} + '\''">
+	  <h2 th:text="${book.title}">course</h2>
+	  <p th:text="${book.description}">description</p>
+	  <a sec:authorize="hasRole('ADMIN')" th:href="|/edit/book?id=${book.id}|">
+	    <i class="fa-solid fa-pen-to-square"></i>
+	  </a>
+	</button>
+      </th:block>
+      <button sec:authorize="hasRole('ADMIN')" class="menu-button menu-edit-button" type="button"
+	      th:onclick="location.href='/make/book'">
+	<i class="fa-solid fa-plus"></i>
+      </button>
     </div>
-  </body>
+  </div>
 </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/all.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div id="topbar">
+      <h1 class="topbar-title">Admin Access</h1>
+    </div>
+    <div>
+      <div th:if="${param.error}">
+        Invalid username and password.
+      </div>
+      <div th:if="${param.logout}">
+        You have been logged out.
+      </div>
+      <form th:action="@{/login}" method="post" style="">
+	<!-- username AND password required for Spring to intercept the authentication -->
+	<div style="display: none"><input type="username" name="username" value="admin" /></div>
+        <div class="password-group"><input class="password-input" type="password" name="password" placeholder="Password?" autofocus /></div>
+        <div><input type="submit" hidden /></div> <!-- submits on Enter -->
+      </form>
+    </div>
+  </body>
+  <script>
+    var html = document.querySelector("html");
+    var sidebar = document.getElementById("sidebar");
+    var sidebarButton = document.getElementById("toggle-sidebar");
+
+    sidebarButton.addEventListener('click', function sidebarToggle() {
+	html.classList.toggle('sidebar-hidden');
+    });
+  </script>
+</html>
+

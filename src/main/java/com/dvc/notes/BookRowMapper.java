@@ -5,14 +5,14 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-public class NoteRowMapper implements RowMapper<Note> {
+public class BookRowMapper implements RowMapper<Book> {
 
     @Override
-    public Note mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-	return new Note(resultSet.getInt("id"),
+    public Book mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+	return new Book(resultSet.getInt("id"),
 			resultSet.getString("code"),
 			resultSet.getString("title"),
-			resultSet.getString("content"));
+			resultSet.getString("description"));
     }
     
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/all.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div id="topbar">
+      <h1 class="topbar-title">Warwick Notes</h1>
+    </div>
+    
+    <div class="content-wrap">
+      <div layout:fragment="content"></div>
+    </div>
+
+    <div style="min-height: 50px; text-align: center">
+      <button sec:authorize="!hasRole('ADMIN')" class="footer-button" type="button" onclick="location.href='/login'">
+	<i class="fa-solid fa-user-shield"></i>
+      </button>
+      <button sec:authorize="hasRole('ADMIN')" class="footer-button" type="button" onclick="location.href='/logout'">
+	<i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </body>
+</html>

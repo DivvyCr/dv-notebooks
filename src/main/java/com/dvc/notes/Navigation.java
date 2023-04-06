@@ -1,30 +1,29 @@
 package com.dvc.notes;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Navigation implements Serializable {
 
-    private Integer noteid;
+    private String title;
     private String link;
-    private ArrayList<Navigation> children;
+    private Integer depth;
     
-    public Navigation(Integer noteid, String link, ArrayList<Navigation> children) {
-	this.noteid = noteid;
+    public Navigation(String title, String link, Integer depth) {
+	this.title = title;
 	this.link = link;
-	this.children = children;
+	this.depth = depth;
     }
 
-    public Integer getNoteid() {
-	return this.noteid;
+    public String getTitle() {
+	return this.title;
     }
 
     public String getLink() {
 	return this.link;
     }
 
-    public ArrayList<Navigation> getChildren() {
-	return this.children;
+    public Integer getDepth() {
+	return this.depth;
     }
 
 }

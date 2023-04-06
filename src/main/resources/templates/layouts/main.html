@@ -4,18 +4,24 @@
     <meta charset="UTF-8">
     
     <title>Title</title>
-    <link rel="stylesheet" href="all.css">
-    <link rel="stylesheet" href="fonts.css">
+    <link rel="stylesheet" href="/css/all.css">
+    <link rel="stylesheet" href="/css/fonts.css">
     <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
 
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+      MathJax = { tex: { inlineMath: [ ['$', '$'] ] }}; // spaces in [ [] ] required for Thymeleaf to parse this
+    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <th:block layout:fragment="extra-head"></th:block>
   </head>
   <body>
     <nav id="sidebar">
       <div class="sidebar-scroll">
-	<ul th:replace="fragments/book-navigation.html :: test (${entries}, 0)"></ul>
+	<ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
       </div>
+      <div layout:fragment="sidebar-options"></div>
     </nav>
     
     <main>
@@ -25,23 +31,21 @@
 	    <i class="fa-solid fa-bars"></i>
 	  </button>
 	</div>
-	<h1 class="topbar-title">Notes Title</h1>
+	<h1 class="topbar-title" th:utext="${chapterObj?.title}"></h1>
         <div class="topbar-buttons">
-          <button class="topbar-button" type="button" onclick="location.href='/'">
+	  <button class="topbar-button" type="button" onclick="location.href='/'">
 	    <i class="fa-solid fa-house"></i>
 	  </button>
 	</div>
       </div>
       <div class="content-wrap">
-	<div class="content">
-	  <!-- <p th:utext="${entries[0].content}"></p> -->
-	</div>
+	<div layout:fragment="content"></div>
       </div>
     </main>
+    <th:block layout:fragment="extra-scripts"></th:block>
   </body>
   <script>
     var html = document.querySelector("html");
-    var sidebar = document.getElementById("sidebar");
     var sidebarButton = document.getElementById("toggle-sidebar");
 
     sidebarButton.addEventListener('click', function sidebarToggle() {
