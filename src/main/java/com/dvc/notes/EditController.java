@@ -8,6 +8,7 @@ import com.dvc.notes.admonition.AdmonitionExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.ast.Node;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +20,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 public class EditController {
@@ -88,6 +93,19 @@ public class EditController {
 	String redirectLink = jdbcTemplate.queryForObject(redirectLinkQuery, String.class, chapter.getId());
 	
 	return ("redirect:/read" + redirectLink);
+    }
+
+    @PostMapping(value="/edit/chapter/preview", consumes="text/markdown", produces="text/markdown")
+    public ResponseEntity<String> test(@RequestBody String temp) {
+	MutableDataSet options = new MutableDataSet()
+	    .set(Parser.EXTENSIONS, Arrays.asList(AdmonitionExtension.create()));
+	
+	Parser p = Parser.builder(options).build();
+	Node md = p.parse(temp);
+	HtmlRenderer html = HtmlRenderer.builder(options).build();
+	String res = html.render(md);
+        
+	return new ResponseEntity<>(res, HttpStatus.OK);	
     }
 
     @PostMapping("/delete/chapter")
