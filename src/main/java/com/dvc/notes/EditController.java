@@ -94,7 +94,7 @@ public class EditController {
     }
 
     @PostMapping(value = "/edit/chapter/preview", consumes = "text/markdown", produces = "text/markdown")
-    public ResponseEntity<String> test(@RequestBody String temp) {
+    public ResponseEntity<String> generatePreview(@RequestBody String temp) {
         MutableDataSet options = new MutableDataSet()
                 .set(Parser.EXTENSIONS, List.of(AdmonitionExtension.create()));
 
@@ -107,7 +107,7 @@ public class EditController {
     }
 
     @PostMapping("/delete/chapter")
-    public String deleteNote(@RequestParam("id") Integer chapterId, Model model) {
+    public String deleteChapter(@RequestParam("id") Integer chapterId, Model model) {
         jdbcTemplate.update("CALL delete_chapter(?)", chapterId);
 
         return "redirect:/"; // TODO
@@ -143,7 +143,7 @@ public class EditController {
     }
 
     @PostMapping("/edit/book")
-    public String saveModule(Book book, Model model) {
+    public String saveBook(Book book, Model model) {
         jdbcTemplate.update("CALL update_book(?, ?, ?, ?)", book.getId(), book.getCode(), book.getTitle(), book.getDescription());
 
         String redirectLinkQuery = "SELECT link FROM first_chapters WHERE book_code = ?";

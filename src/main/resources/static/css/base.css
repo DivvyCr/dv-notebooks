@@ -290,6 +290,7 @@ td.code-caption {
     "description description";
     grid-template-columns: minmax(0, auto) 1fr;
     width: 40%;
+    min-height: 100px;
     cursor: pointer;
     padding: 0 1rem .5rem;
     border-top: 4px solid #303030;

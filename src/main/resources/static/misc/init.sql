@@ -111,8 +111,7 @@ BEGIN
 
     UPDATE navigation
     SET priority = priority - 1
-    WHERE priority >= delete_priority
-      AND chapterid != delete_chapterid /* To avoid setting priority 0 by accident */
+    WHERE priority >= delete_priority AND priority > 1
       AND (parent_chapterid = delete_parentid OR (parent_chapterid IS NULL AND delete_parentid IS NULL));
 
     IF delete_parentid = delete_chapterid THEN
@@ -146,7 +145,7 @@ BEGIN
     INSERT INTO books (code, title, description)
     VALUES (bookCode, bookTitle, bookDescription)
     RETURNING id INTO new_bookid;
-    PERFORM create_chapter(new_bookid, NULL, bookCode || ' Intro', ''); /* PERFORM instead of SELECT since we are ignoring return value */
+    PERFORM create_chapter(new_bookid, NULL, NULL, bookCode || ' Intro', ''); /* PERFORM instead of SELECT since we are ignoring return value */
 
     RETURN new_bookid;
 END;
@@ -203,6 +202,12 @@ DECLARE
 BEGIN
     INSERT INTO chapters (title, content) VALUES (chapterTitle, chapterContent) RETURNING id INTO new_chapterid;
 
+    IF parentId IS NULL THEN
+        SELECT new_chapterid INTO new_parentid;
+    ELSE
+        SELECT parentId INTO new_parentid;
+    END IF;
+
     IF precedingId IS NULL THEN
         SELECT 1 INTO new_priority;
     ELSE
@@ -212,9 +217,10 @@ BEGIN
     UPDATE navigation
     SET priority = priority + 1
     WHERE priority >= new_priority
-      AND (parent_chapterid = new_parentid OR (parent_chapterid IS NULL AND new_parentid IS NULL));
+      AND (parent_chapterid = new_parentid);
+
     INSERT INTO navigation (bookid, chapterid, parent_chapterid, priority)
-    VALUES (bookId, new_chapterid, parentId, new_priority);
+    VALUES (bookId, new_chapterid, new_parentid, new_priority);
 
     RETURN new_chapterid;
 END;
@@ -231,8 +237,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE PROCEDURE delete_chapter(deleteChapterId INTEGER)
-AS
+CREATE OR REPLACE FUNCTION delete_chapter(deleteChapterId INTEGER)
+RETURNS INTEGER AS
 $$
 DECLARE
     delete_bookid INTEGER;
@@ -242,12 +248,14 @@ BEGIN
     SELECT bookid FROM navigation WHERE chapterid = deleteChapterId INTO delete_bookid;
     IF (SELECT COUNT(*) FROM navigation WHERE bookid = delete_bookid) <= 1
     THEN
-        RETURN;
+        RETURN -1;
     END IF;
 
     /* Carry out deletion: */
 
     DELETE FROM chapters WHERE id = deleteChapterId;
+
+    RETURN delete_bookid;
 END;
 $$ LANGUAGE plpgsql;
 
