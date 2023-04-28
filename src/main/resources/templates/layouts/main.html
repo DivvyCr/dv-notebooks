@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    
-    <title>Title</title>
-    <link rel="stylesheet" href="/css/all.css">
-    <link rel="stylesheet" href="/css/fonts.css">
-    <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script>
-      MathJax = { tex: { inlineMath: [ ['$', '$'] ] }}; // spaces in [ [] ] required for Thymeleaf to parse this
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <title>Title</title>
+  <link rel="stylesheet" href="/css/all.css">
+  <link rel="stylesheet" href="/css/topbar.css">
+  <link rel="stylesheet" href="/css/menu.css">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
 
-    <th:block layout:fragment="extra-head"></th:block>
-  </head>
-  <body>
-    <nav id="sidebar">
-      <div class="sidebar-scroll">
-	<ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
-      </div>
-      <div layout:fragment="sidebar-options"></div>
-    </nav>
-    
-    <main>
-      <div id="topbar">
-	<div class="topbar-buttons">
-	  <button id="toggle-sidebar" class="topbar-button" type="button" title="Toggle Sidebar">
-	    <i class="fa-solid fa-bars"></i>
-	  </button>
-	</div>
-	<h1 class="topbar-title" th:utext="${chapterObj?.title}"></h1>
-        <div class="topbar-buttons">
-	  <button class="topbar-button" type="button" onclick="location.href='/'">
-	    <i class="fa-solid fa-house"></i>
-	  </button>
-	</div>
-      </div>
-      <div class="content-wrap">
-	<div layout:fragment="content"></div>
-      </div>
-    </main>
-    <th:block layout:fragment="extra-scripts"></th:block>
-  </body>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script>
-    var html = document.querySelector("html");
-    var sidebarButton = document.getElementById("toggle-sidebar");
-
-    sidebarButton.addEventListener('click', function sidebarToggle() {
-	html.classList.toggle('sidebar-hidden');
-    });
+      MathJax = {tex: {inlineMath: [ ['$', '$'] ]}}; // spaces in [ [] ] required for Thymeleaf to parse this
   </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <th:block layout:fragment="extra-head"></th:block>
+</head>
+<body>
+<nav id="menu">
+  <div class="menu-scroll">
+    <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
+  </div>
+  <div layout:fragment="menu-options"></div>
+</nav>
+
+<main>
+  <div id="topbar">
+    <div class="topbar-buttons">
+      <button id="toggle-menu" class="topbar-button" type="button" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <h1 class="topbar-title" th:utext="${chapterObj?.title}"></h1>
+    <div class="topbar-buttons">
+      <button class="topbar-button" type="button" onclick="location.href='/'">
+        <i class="fa-solid fa-house"></i>
+      </button>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div layout:fragment="content"></div>
+  </div>
+</main>
+
+<nav id="mobile-menu">
+  <button id="toggle-mobile-menu" class="mm-button" type="button" title="Toggle Menu">
+    <i class="fa-solid fa-chevron-up"></i>
+  </button>
+  <div class="mm-top">
+    <h1 class="mm-title" th:utext="${chapterObj?.title}"></h1>
+  </div>
+  <div class="menu-scroll">
+    <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
+  </div>
+  <div layout:fragment="menu-options"></div>
+</nav>
+<script src="/js/menu.js"></script>
+<th:block layout:fragment="extra-scripts"></th:block>
+</body>
 </html>

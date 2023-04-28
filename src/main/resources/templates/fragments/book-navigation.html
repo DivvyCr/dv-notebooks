@@ -5,14 +5,14 @@
 <ul class="side-list" th:unless="${entries?.empty}" th:fragment="renderNavX (entries, note, depth)">
   <li th:id="${entry?.id}" th:each="entry : ${entries}">
     <th:block th:switch="${depth}">
-      <a th:case="0" class="sidebar-lvl-0" th:text="${entry?.title}"
-	 th:id="${note.id} == ${entry?.id} ? sidebar-active : ''"
+      <a th:case="0" class="menu-lvl-0" th:text="${entry?.title}"
+	 th:id="${note.id} == ${entry?.id} ? menu-active : ''"
 	 th:href="|/read${entry?.link}|"></a>
-      <a th:case="1" class="sidebar-lvl-1" th:text="${entry?.title}"
-	 th:id="${note.id} == ${entry?.id} ? sidebar-active : ''"
+      <a th:case="1" class="menu-lvl-1" th:text="${entry?.title}"
+	 th:id="${note.id} == ${entry?.id} ? menu-active : ''"
 	 th:href="|/read${entry?.link}|"></a>
-      <a th:case="*" class="sidebar-lvl-deep" th:text="${entry?.title}"
-	 th:id="${note.id} == ${entry?.id} ? sidebar-active : ''"
+      <a th:case="*" class="menu-lvl-deep" th:text="${entry?.title}"
+	 th:id="${note.id} == ${entry?.id} ? menu-active : ''"
 	 th:href="|/read${entry?.link}|"></a>
     </th:block>
     <ul th:replace="~{:: renderNavX (${entry?.children}, ${note}, ${depth}+1)}"></ul>

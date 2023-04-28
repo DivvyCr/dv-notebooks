@@ -1,0 +1,42 @@
+#topbar {
+    z-index: 100;
+    position: sticky;
+    top: 0;
+    display: flex;
+    background-color: #151515;
+    box-shadow: 0.2rem 0.33rem 10px #121212;
+}
+
+@media (max-width: 600px) {
+    #topbar {
+        display: none;
+    }
+}
+
+.topbar-title {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    color: #606060;
+    font-weight: 200;
+    font-size: 2rem;
+}
+
+.topbar-buttons {
+    font-size: 1rem;
+    margin: auto .5rem;
+}
+
+.topbar-button {
+    padding: 0 .2rem;
+    cursor: pointer;
+}
+
+.topbar-button > .fa-solid {
+    line-height: inherit;
+    transition: color 0.2s;
+}
+
+.topbar-button > .fa-solid:hover {
+    color: #e9c56d;
+}
