@@ -179,7 +179,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION append_chapter(precedingId INTEGER, chapterTitle VARCHAR(50), chapterContent TEXT)
+CREATE OR REPLACE FUNCTION append_chapter(parentId INTEGER, precedingId INTEGER, chapterTitle VARCHAR(50), chapterContent TEXT)
     RETURNS INTEGER AS
 $$
 DECLARE
@@ -187,12 +187,12 @@ DECLARE
     new_chapterid INTEGER;
 BEGIN
     SELECT bookid FROM navigation WHERE chapterid = precedingId INTO new_bookid;
-    SELECT create_chapter(new_bookid, precedingId, chapterTitle, chapterContent) INTO new_chapterid;
+    SELECT create_chapter(new_bookid, parentId, precedingId, chapterTitle, chapterContent) INTO new_chapterid;
     RETURN new_chapterid;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_chapter(bookId INTEGER, precedingId INTEGER, chapterTitle VARCHAR(50),
+CREATE OR REPLACE FUNCTION create_chapter(bookId INTEGER, parentId INTEGER, precedingId INTEGER, chapterTitle VARCHAR(50),
                                           chapterContent TEXT)
     RETURNS INTEGER AS
 $$
@@ -205,10 +205,8 @@ BEGIN
 
     IF precedingId IS NULL THEN
         SELECT 1 INTO new_priority;
-        SELECT new_chapterid INTO new_parentid;
     ELSE
         SELECT priority + 1 FROM navigation WHERE chapterid = precedingId INTO new_priority;
-        SELECT parent_chapterid FROM navigation WHERE chapterid = precedingId INTO new_parentid;
     END IF;
 
     UPDATE navigation
@@ -216,7 +214,7 @@ BEGIN
     WHERE priority >= new_priority
       AND (parent_chapterid = new_parentid OR (parent_chapterid IS NULL AND new_parentid IS NULL));
     INSERT INTO navigation (bookid, chapterid, parent_chapterid, priority)
-    VALUES (bookId, new_chapterid, new_parentid, new_priority);
+    VALUES (bookId, new_chapterid, parentId, new_priority);
 
     RETURN new_chapterid;
 END;

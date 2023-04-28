@@ -57,6 +57,7 @@ public class EditController {
     public String saveNewChapter(@RequestParam("id") Integer precedingChapterId, Chapter newChapter, Model model) {
         SimpleJdbcCall newChapterCall = new SimpleJdbcCall(jdbcTemplate).withFunctionName("append_chapter");
         SqlParameterSource newChapterParameters = new MapSqlParameterSource()
+                .addValue("parentId", newChapter.getParentID())
                 .addValue("precedingId", precedingChapterId)
                 .addValue("chapterTitle", newChapter.getTitle())
                 .addValue("chapterContent", newChapter.getMdContent());
