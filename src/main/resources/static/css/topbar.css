@@ -8,7 +8,7 @@
 }
 
 @media (max-width: 600px) {
-    #topbar {
+    #topbar:not(.topbar-login) {
         display: none;
     }
 }

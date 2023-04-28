@@ -1,7 +1,12 @@
 html {
     font-family: sans-serif;
-    font-size: 1.2rem; /* Any better way to define the base font size? */
     line-height: 1.5;
+}
+
+@media (min-width: 600px) {
+    html {
+        font-size: 1.2rem;
+    }
 }
 
 body {
@@ -33,6 +38,20 @@ h6 {
     color: #dcdcdc;
 }
 
+@media (max-width: 600px) {
+    h1,
+    h2 {
+        margin: 1rem 0 .5rem;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: .75rem 0 .5rem;
+    }
+}
+
 p {
     margin: 0 0 .5rem;
 }
@@ -51,16 +70,27 @@ button {
 }
 
 .content-wrap {
-    padding: 0 10px 2rem;
+    padding: 1rem .5rem 2rem;
     overflow-y: auto;
-
     flex: 1;
+}
+
+@media (max-width: 600px) {
+    :not(main) > .content-wrap {
+        padding: 0 1rem 1rem;
+    }
+
+    .menu-shown .content {
+        max-height: calc(30vh - 80px);
+    }
 }
 
 .content {
     padding: 0 10px;
     margin: 0 auto;
     max-width: 800px;
+    max-height: 100vh;
+    transition: max-height .5s;
 }
 
 strong {
@@ -101,7 +131,6 @@ table.aside {
     position: relative;
     width: 100%;
     border-collapse: collapse;
-    font-size: 18px;
     margin: 2rem 0 1.5rem;
 }
 
@@ -260,19 +289,32 @@ td.code-caption {
     "edit-icon title"
     "description description";
     grid-template-columns: minmax(0, auto) 1fr;
-    gap: 5px;
     width: 40%;
     cursor: pointer;
-    padding: 0 20px 10px;
+    padding: 0 1rem .5rem;
     border-top: 4px solid #303030;
     border-radius: 7px;
     background: #202020;
     transition: all 0.3s ease;
+    word-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+    .menu-button {
+        width: 100%;
+        border-top: 4px solid #e9c56d;
+    }
 }
 
 .menu-button > h2 {
-    margin-top: 15px;
+    margin-top: .75rem;
     grid-area: title;
+}
+
+@media (max-width: 600px) {
+    .menu-button > h2 {
+        margin-top: .5rem;
+    }
 }
 
 .menu-button > p {
@@ -283,9 +325,9 @@ td.code-caption {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-right: 5px;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    padding-right: .5rem;
+    margin-top: .75rem;
+    margin-bottom: .5rem;
     grid-area: edit-icon;
 }
 
@@ -306,7 +348,7 @@ mjx-container[display="true"] {
 .password-group {
     display: flex;
     justify-content: center;
-    padding-top: 5%;
+    padding-top: 5vh;
 }
 
 .password-input {
