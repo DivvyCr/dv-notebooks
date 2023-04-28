@@ -12,7 +12,7 @@ public class Book implements Serializable {
     
     public Book(Integer id, String code, String title, String description) {
 	this.id = id;
-	this.code = code;
+	this.code = code.toLowerCase();
 	this.title = title;
 	this.description = description;
     }

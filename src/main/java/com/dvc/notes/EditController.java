@@ -122,7 +122,7 @@ public class EditController {
     public String saveNewBook(Book newBook, Model model) {
         SimpleJdbcCall newBookCall = new SimpleJdbcCall(jdbcTemplate).withFunctionName("create_book");
         SqlParameterSource newBookParameters = new MapSqlParameterSource()
-                .addValue("bookCode", newBook.getCode())
+                .addValue("bookCode", newBook.getCode().toLowerCase())
                 .addValue("bookTitle", newBook.getTitle())
                 .addValue("bookDescription", newBook.getDescription());
         Integer newBookId = newBookCall.executeFunction(Integer.class, newBookParameters);
