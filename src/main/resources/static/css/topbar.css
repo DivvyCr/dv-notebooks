@@ -3,6 +3,7 @@
     position: sticky;
     top: 0;
     display: flex;
+    margin-bottom: 1rem;
     background-color: #151515;
     box-shadow: 0.2rem 0.33rem 10px #121212;
 }

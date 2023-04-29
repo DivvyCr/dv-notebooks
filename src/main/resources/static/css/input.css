@@ -1,3 +1,5 @@
+@import "colours.css";
+
 .basic-input {
     width: 100%;
     padding: .4rem;
@@ -18,15 +20,18 @@
 .password-group {
     display: flex;
     justify-content: center;
-    padding-top: 5vh;
 }
 
 .password-input {
     padding: 6px;
     border: 0;
     font-size: 20px;
-    color: #bbb;
+    color: var(--highlight-foreground);
     background-color: #333;
+}
+
+.password-input.error {
+    border-bottom: 2px solid var(--error);
 }
 
 .password-input:focus {

@@ -75,7 +75,7 @@ inButton.addEventListener('click', function moveIn() {
     if (movableElement.previousElementSibling.lastElementChild.tagName.toLowerCase() !== "ul") {
         // Need to create a sub-list:
         var subList = document.createElement("ul");
-        subList.className = "side-list";
+        subList.className = "chapter-list";
         movableElement.previousElementSibling.appendChild(subList);
         precedingIdTextElement.removeAttribute("value");
     }

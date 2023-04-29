@@ -82,8 +82,7 @@ button {
 }
 
 .content-wrap {
-    padding: 1rem .5rem 2rem;
-    overflow-y: auto;
+    padding: 0rem .5rem 4rem;
     flex: 1;
 }
 
@@ -101,7 +100,6 @@ button {
     padding: 0 10px;
     margin: 0 auto;
     max-width: 800px;
-    max-height: 100vh;
     transition: max-height .5s;
 }
 

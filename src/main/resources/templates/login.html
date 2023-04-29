@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Title</title>
-    <link rel="stylesheet" href="/css/all.css">
-    <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
-  </head>
-  <body>
-    <div id="topbar" class="topbar-login">
-      <h1 class="topbar-title">Admin Access</h1>
-    </div>
-    <div>
-      <div th:if="${param.error}">
-        Invalid username and password.
-      </div>
-      <div th:if="${param.logout}">
-        You have been logged out.
-      </div>
-      <form th:action="@{/login}" method="post" style="">
-	<!-- username AND password required for Spring to intercept the authentication -->
-	<div style="display: none"><input type="username" name="username" value="admin" /></div>
-        <div class="password-group"><input class="password-input" type="password" name="password" placeholder="Password?" autofocus /></div>
-        <div><input type="submit" hidden /></div> <!-- submits on Enter -->
-      </form>
-    </div>
-  </body>
-  <script>
+  <title>Title</title>
+  <link rel="stylesheet" href="/css/all.css">
+  <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+      href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
+</head>
+<body>
+<h1 style="text-align: center">Editor Access</h1>
+<form th:action="@{/login}" method="post" style="">
+  <!-- username AND password required for Spring to intercept the authentication -->
+  <div style="display: none"><input type="username" name="username" value="admin"/></div>
+  <div class="password-group">
+    <input class="password-input"
+           th:classappend="${param.error != null ? 'error' : ''}"
+           type="password" name="password" placeholder="Password..." autofocus/>
+  </div>
+  <div><input type="submit" hidden/></div> <!-- submits on Enter -->
+</form>
+</body>
+<script>
     var html = document.querySelector("html");
     var sidebar = document.getElementById("sidebar");
     var sidebarButton = document.getElementById("toggle-sidebar");
 
     sidebarButton.addEventListener('click', function sidebarToggle() {
-	html.classList.toggle('sidebar-hidden');
+        html.classList.toggle('sidebar-hidden');
     });
-  </script>
+</script>
 </html>
 
