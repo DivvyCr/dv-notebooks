@@ -38,6 +38,7 @@ public class AdmonitionExtension implements Parser.ParserExtension, HtmlRenderer
         qualifierTypeMap.put("info", "info");
         qualifierTypeMap.put("note", "note");
         qualifierTypeMap.put("tip", "tip");
+        qualifierTypeMap.put("code", "code");
         return qualifierTypeMap;
     }
 

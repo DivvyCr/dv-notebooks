@@ -23,68 +23,70 @@ public class Chapter implements Serializable {
     public Chapter() {}
     
     public Chapter(Integer id, String title, String mdContent) {
-	this.id = id;
-	this.title = title;
-	this.mdContent = mdContent;
+        this.id = id;
+        this.title = title;
+        this.mdContent = mdContent;
 
-	MutableDataSet options = new MutableDataSet()
-	        .set(Parser.EXTENSIONS, List.of(
+        MutableDataSet options = new MutableDataSet()
+                .set(Parser.HTML_BLOCK_DEEP_PARSER, true)
+                .set(Parser.INDENTED_CODE_BLOCK_PARSER, false)
+                .set(Parser.EXTENSIONS, List.of(
                     AdmonitionExtension.create(),
                     AttributesExtension.create(),
                     TablesExtension.create()));
 
-	Parser p = Parser.builder(options).build();
-	Node md = p.parse(mdContent);
-	HtmlRenderer html = HtmlRenderer.builder(options).build();
-	this.htmlContent = html.render(md);
+        Parser p = Parser.builder(options).build();
+        Node md = p.parse(mdContent);
+        HtmlRenderer html = HtmlRenderer.builder(options).build();
+        this.htmlContent = html.render(md);
     }
 
     public Integer getId() {
-	return id;
+        return id;
     }
 
     public void setId(Integer id) {
-	this.id = id;
+        this.id = id;
     }
 
     public String getTitle() {
-	return title;
+        return title;
     }
 
     public void setTitle(String title) {
-	this.title = title;
+        this.title = title;
     }
 
     public String getMdContent() {
-	return mdContent;
+        return mdContent;
     }
 
     public void setMdContent(String mdContent) {
-	this.mdContent = mdContent;
+        this.mdContent = mdContent;
     }
 
     public String getHtmlContent() {
-	return htmlContent;
+        return htmlContent;
     }
 
     public void setHtmlContent(String htmlContent) {
-	this.htmlContent = htmlContent;
+        this.htmlContent = htmlContent;
     }
 
     public Integer getParentID() {
-	return this.parentID;
+        return this.parentID;
     }
     
     public void setParentID(Integer parentID) {
-	this.parentID = parentID;
+        this.parentID = parentID;
     }
 
     public Integer getPrecedingID() {
-	return this.precedingID;
+        return this.precedingID;
     }
     
     public void setPrecedingID(Integer precedingID) {
-	this.precedingID = precedingID;
+        this.precedingID = precedingID;
     }
 
 }

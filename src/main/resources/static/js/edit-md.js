@@ -11,6 +11,7 @@ var mde = new EasyMDE({
         req.onreadystatechange = () => {
             if (req.readyState == 4) {
                 preview.innerHTML = req.response;
+                Prism.highlightAll();
             }
         }
         req.open('POST', '/edit/chapter/preview');
