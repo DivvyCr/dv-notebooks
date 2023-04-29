@@ -3,8 +3,6 @@ package com.dvc.notes.relations;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import org.springframework.jdbc.core.RowMapper;
@@ -28,12 +26,7 @@ public class NavigationRowMapper implements RowMapper<Navigation> {
 		noteChildren.add(idToNav.get(id));
 	    }
 
-	    Collections.sort(noteChildren,new Comparator<Navigation>() {
-		    @Override
-		    public int compare(Navigation bn1, Navigation bn2) {
-			return bn1.getPath().compareToIgnoreCase(bn2.getPath());
-		    }
-		});
+	    noteChildren.sort((bn1, bn2) -> bn1.getPath().compareToIgnoreCase(bn2.getPath()));
 	}
 
 	// TODO: consider improving (?) whole navigation system
@@ -42,8 +35,8 @@ public class NavigationRowMapper implements RowMapper<Navigation> {
 
 	this.idToNav.put(noteID, newNav);
 
-	Integer noteParent = resultSet.getInt("parent_chapterid");
-	return (noteParent == noteID) ? newNav : null;
+	int noteParent = resultSet.getInt("parent_chapterid");
+	return (noteParent.equals(noteID)) ? newNav : null;
     }
     
 }

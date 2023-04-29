@@ -10,7 +10,6 @@ import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,8 +67,8 @@ public class AdmonitionExtension implements Parser.ParserExtension, HtmlRenderer
     public void extend(@NotNull HtmlRenderer.Builder htmlRendererBuilder, @NotNull String rendererType) {
         if (htmlRendererBuilder.isRendererType("HTML")) {
             htmlRendererBuilder.nodeRendererFactory(new AdmonitionNodeRenderer.Factory());
-        } else if (htmlRendererBuilder.isRendererType("JIRA")) {
-
+        } else {
+            htmlRendererBuilder.isRendererType("JIRA");
         }
     }
 }

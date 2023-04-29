@@ -1,17 +1,13 @@
 package com.dvc.notes.admonition.internal;
 
 import com.dvc.notes.admonition.AdmonitionBlock;
-import com.vladsch.flexmark.ast.FencedCodeBlock;
-import com.vladsch.flexmark.ast.Paragraph;
 import com.vladsch.flexmark.html.HtmlWriter;
 import com.vladsch.flexmark.html.renderer.*;
 import com.vladsch.flexmark.util.ast.Document;
-import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.html.Attribute;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 
-import com.vladsch.flexmark.util.sequence.builder.tree.Segment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -63,6 +59,7 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
 
         BasedSequence openingMarker = node.getOpeningMarker(); // either !!!, ???, or ???+
 
+        BasedSequence contents = node.getChars();
         if (type.equals("code")) {
             /* RENDER THE FOLLOWING:
               <table class="code-snippet">
@@ -81,7 +78,6 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
               </table>
             */
 
-            BasedSequence contents = node.getChars();
             html.srcPos(contents).withAttr()
                     .attr(Attribute.CLASS_ATTR, "code-snippet")
                     .tag("table", false).line();
@@ -107,12 +103,7 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
                     .attr(Attribute.CLASS_ATTR, "code-content")
                     .attr(Attribute.CLASS_ATTR, "line-numbers")
                     .tag("td").line();
-            context.renderChildren(node);
-            html.closeTag("td").line();
-            html.closeTag("tr").line();
 
-            html.closeTag("tbody").line();
-            html.closeTag("table").line();
         } else {
             /* RENDER THE FOLLOWING:
               <table class="aside">
@@ -125,7 +116,6 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
               </table>
             */
 
-            BasedSequence contents = node.getChars();
             html.srcPos(contents).withAttr()
                     .attr(Attribute.CLASS_ATTR, "aside")
                     .tag("table", false).line();
@@ -141,13 +131,6 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
                     .attr(Attribute.CLASS_ATTR, "aside-content")
                     .attr(Attribute.CLASS_ATTR, type)
                     .tag("td").line();
-            context.renderChildren(node);
-            html.closeTag("td").line();
-
-            html.closeTag("tr").line();
-            html.closeTag("tbody").line();
-
-            html.closeTag("table").line();
 
             // html.attr(Attribute.CLASS_ATTR, "adm-body").withAttr(ADMONITION_BODY_PART).tag("div").indent().line();
 
@@ -155,6 +138,11 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
 
             // html.unIndent().closeTag("div").line();
         }
+        context.renderChildren(node);
+        html.closeTag("td").line();
+        html.closeTag("tr").line();
+        html.closeTag("tbody").line();
+        html.closeTag("table").line();
     }
 
     public static class Factory implements NodeRendererFactory {

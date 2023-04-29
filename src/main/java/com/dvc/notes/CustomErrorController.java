@@ -9,7 +9,7 @@ public class CustomErrorController implements ErrorController {
 
     @RequestMapping("/error")
     private String handleError() {
-        return "404";
+        return "errors/404";
     }
 
 }

@@ -6,12 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.authentication.JdbcUserServiceBeanDefinitionParser;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -39,6 +37,7 @@ public class AdminConfiguration {
     public UserDetailsService userDetailsService() {
         String password = jdbcTemplate.queryForObject("SELECT password FROM editors WHERE username = 'admin'", String.class);
 
+        assert password != null;
         UserDetails user = User.withUsername("admin")
                 .password(password)
                 .roles("ADMIN")
