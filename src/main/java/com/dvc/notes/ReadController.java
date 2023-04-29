@@ -22,7 +22,7 @@ import java.util.List;
 public class ReadController {
 
     @ResponseStatus(value=HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EmptyResultDataAccessException.class)
+    @ExceptionHandler({EmptyResultDataAccessException.class, NullPointerException.class})
     private String notFound() {
         return "errors/404";
     }
@@ -36,6 +36,10 @@ public class ReadController {
         Collections.reverse(navTree);
         navTree.removeAll(Collections.singleton(null));
         model.addAttribute("navTree", navTree);
+    }
+
+    private void setPageTitle(String title, Model model) {
+        model.addAttribute("pageTitle", title + " - Crib Sheet");
     }
 
     private Integer getChapterIdFromURL(String bookCode, String chapterKebab) {
@@ -56,6 +60,7 @@ public class ReadController {
         String q = "SELECT * FROM chapters WHERE id = ?";
         Chapter chapter = jdbcTemplate.queryForObject(q, new ChapterRowMapper(), getChapterIdFromURL(bookCode, chapterKebab));
         model.addAttribute("chapterObj", chapter);
+        setPageTitle(chapter.getTitle(), model);
 
         addNavigationEntries(bookCode, model);
         return "read";

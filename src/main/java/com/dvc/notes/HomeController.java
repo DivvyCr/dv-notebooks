@@ -20,11 +20,13 @@ public class HomeController {
     public String home(Model model) {
         List<Book> storedBooks = jdbcTemplate.query("SELECT * FROM books", new BookRowMapper());
         model.addAttribute("books", storedBooks);
+        model.addAttribute("pageTitle", "Crib Sheet");
         return "index";
     }
 
     @GetMapping("/login")
     public String login(Model model) {
+        model.addAttribute("pageTitle", "Editor Access - Crib Sheet");
         return "login";
     }
 

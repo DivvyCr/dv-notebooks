@@ -44,6 +44,10 @@ public class EditController {
         model.addAttribute("navTree", navTree);
     }
 
+    private void setPageTitle(String title, Model model) {
+        model.addAttribute("pageTitle", title + " - Editing Crib Sheet");
+    }
+
     @GetMapping("/make/chapter")
     public String newChapter(@RequestParam("id") Integer precedingChapterId, Model model) {
         String q1 = "SELECT parent_chapterid FROM navigation WHERE chapterid = ?";
@@ -57,6 +61,7 @@ public class EditController {
         String q = "SELECT bookid FROM navigation WHERE chapterid = ?";
         Integer bookId = jdbcTemplate.queryForObject(q, Integer.class, precedingChapterId);
         addNavigationEntries(bookId, model);
+        setPageTitle("New Chapter", model);
 
         return "editors/chapter-editor";
     }
@@ -86,6 +91,7 @@ public class EditController {
         String q2 = "SELECT bookid FROM navigation WHERE chapterid = ?";
         Integer bookId = jdbcTemplate.queryForObject(q2, Integer.class, chapterId);
         addNavigationEntries(bookId, model);
+        setPageTitle(chapter.getTitle(), model);
 
         return "editors/chapter-editor";
     }
@@ -134,6 +140,7 @@ public class EditController {
     @GetMapping({"/make/book", "/make/book/"})
     public String newBook(Model model) {
         model.addAttribute("bookObj", new Book());
+        setPageTitle("New Book", model);
         return "editors/book-editor";
     }
 
@@ -157,6 +164,7 @@ public class EditController {
         String q = "SELECT * FROM books WHERE id = ?";
         Book book = jdbcTemplate.queryForObject(q, new BookRowMapper(), bookId);
         model.addAttribute("bookObj", book);
+        setPageTitle(book.getTitle(), model);
         return "editors/book-editor";
     }
 
