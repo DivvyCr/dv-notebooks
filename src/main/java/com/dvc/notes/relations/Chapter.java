@@ -28,8 +28,7 @@ public class Chapter implements Serializable {
         this.mdContent = mdContent;
 
         MutableDataSet options = new MutableDataSet()
-                .set(Parser.HTML_BLOCK_DEEP_PARSER, true)
-                .set(Parser.INDENTED_CODE_BLOCK_PARSER, false)
+                .set(AdmonitionExtension.ALLOW_LAZY_CONTINUATION, false) // Must indent admonition content!
                 .set(Parser.EXTENSIONS, List.of(
                     AdmonitionExtension.create(),
                     AttributesExtension.create(),

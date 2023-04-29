@@ -9,8 +9,9 @@ var mde = new EasyMDE({
     previewRender: function (plaintext, preview) {
         var req = new XMLHttpRequest();
         req.onreadystatechange = () => {
-            if (req.readyState == 4) {
+            if (req.readyState === 4) {
                 preview.innerHTML = req.response;
+                MathJax.typeset();
                 Prism.highlightAll();
             }
         }
@@ -37,6 +38,4 @@ previewButton.addEventListener('click', function togglePreview() {
         document.getElementById("preview-icon").removeAttribute("style");
         document.getElementById("no-preview-icon").setAttribute("style", "display: none");
     }
-
-    MathJax.typeset();
 });

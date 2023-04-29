@@ -1,13 +1,17 @@
 package com.dvc.notes.admonition.internal;
 
 import com.dvc.notes.admonition.AdmonitionBlock;
+import com.vladsch.flexmark.ast.FencedCodeBlock;
+import com.vladsch.flexmark.ast.Paragraph;
 import com.vladsch.flexmark.html.HtmlWriter;
 import com.vladsch.flexmark.html.renderer.*;
 import com.vladsch.flexmark.util.ast.Document;
+import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.html.Attribute;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 
+import com.vladsch.flexmark.util.sequence.builder.tree.Segment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -53,7 +57,6 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
         String info = node.getInfo().toString().toLowerCase();
         String title = node.getTitle().toString();
         String type = this.options.qualifierTypeMap.get(info);
-        System.out.println(type);
         if (type == null) {
             type = options.unresolvedQualifier;
         }
