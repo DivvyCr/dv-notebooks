@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Controller
 public class HomeController {
@@ -18,8 +19,8 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Book> storedBooks = jdbcTemplate.query("SELECT * FROM books", new BookRowMapper());
-        model.addAttribute("books", storedBooks);
+        // List<Book> storedBooks = jdbcTemplate.query("SELECT * FROM books", new BookRowMapper());
+        model.addAttribute("books", new ArrayList<Book>() /*storedBooks*/);
         model.addAttribute("pageTitle", "Crib Sheet");
         return "index";
     }
