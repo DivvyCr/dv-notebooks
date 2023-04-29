@@ -3,6 +3,7 @@ package com.dvc.notes;
 import com.dvc.notes.admonition.AdmonitionExtension;
 import com.dvc.notes.relations.*;
 import com.vladsch.flexmark.ext.attributes.AttributesExtension;
+import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
@@ -107,7 +108,8 @@ public class EditController {
                 .set(Parser.EXTENSIONS, List.of(
                         AdmonitionExtension.create(),
                         AttributesExtension.create(),
-                        TablesExtension.create()));
+                        GitLabExtension.create(),
+                        TablesExtension.create()));;
 
         Parser p = Parser.builder(options).build();
         Node md = p.parse(temp);

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.vladsch.flexmark.ext.attributes.AttributesExtension;
+import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.parser.Parser;
@@ -32,7 +33,8 @@ public class Chapter implements Serializable {
                 .set(Parser.EXTENSIONS, List.of(
                     AdmonitionExtension.create(),
                     AttributesExtension.create(),
-                    TablesExtension.create()));
+                        GitLabExtension.create(),
+                        TablesExtension.create()));
 
         Parser p = Parser.builder(options).build();
         Node md = p.parse(mdContent);

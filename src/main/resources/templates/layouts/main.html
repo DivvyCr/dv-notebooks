@@ -14,11 +14,10 @@
       href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet">
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script>
-      MathJax = {tex: {inlineMath: [ ['$', '$'] ]}}; // spaces in [ [] ] required for Thymeleaf to parse this
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js" integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+          onload="renderMathInElement(document.body);"></script>
 
   <th:block layout:fragment="extra-head"></th:block>
 </head>
@@ -63,6 +62,21 @@
 </nav>
 <script src="/js/chapter-select.js"></script>
 <script src="/js/prism.js"></script>
+<script>
+    (function () {
+        document.addEventListener("DOMContentLoaded", function () {
+            var mathElems = document.getElementsByClassName("katex");
+            var elems = [];
+            for (const i in mathElems) {
+                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+            }
+
+            elems.forEach(elem => {
+                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+            });
+        });
+    })();
+</script>
 <th:block layout:fragment="extra-scripts"></th:block>
 </body>
 </html>

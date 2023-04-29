@@ -1,11 +1,16 @@
-/* MathJax: */
+@import "colours.css";
 
-mjx-container {
-    z-index: 99;
+/* KaTeX: */
+
+.katex {
+    font-size: 1.1rem !important;
+    color: var(--highlight-foreground);
 }
 
-mjx-container[display="true"] {
-    color: var(--highlight-foreground);
+.katex-display {
+    overflow: auto hidden !important;
+    padding-bottom: .5em !important;
+    margin-bottom: .5em !important;
 }
 
 /* EasyMDE: */
@@ -52,7 +57,7 @@ code .highlight-line:before {
 code[class*="language-"],
 pre[class*="language-"] {
     color: #c3c3c3;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    font-family: 'Chivo Mono', Consolas, Monaco, 'Andale Mono', monospace;
     direction: ltr;
     text-align: left;
     white-space: pre;

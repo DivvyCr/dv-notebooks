@@ -28,6 +28,14 @@ window.addEventListener("load", (event) => {
     } else {
         precedingIdTextElement.removeAttribute("value");
     }
+
+    if (titleTextElement.value) {
+        movableElementText.innerHTML = titleTextElement.value;
+        topbarTitleTextElement.innerHTML = titleTextElement.value;
+    } else {
+        movableElementText.innerHTML = "New Chapter";
+        topbarTitleTextElement.innerHTML = "New Chapter";
+    }
 });
 
 window.addEventListener("unload", (event) => {

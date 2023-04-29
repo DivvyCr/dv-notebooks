@@ -11,8 +11,8 @@ var mde = new EasyMDE({
         req.onreadystatechange = () => {
             if (req.readyState === 4) {
                 preview.innerHTML = req.response;
-                MathJax.typeset();
                 Prism.highlightAll();
+                updateKaTeX();
             }
         }
         req.open('POST', '/edit/chapter/preview');
@@ -39,3 +39,15 @@ previewButton.addEventListener('click', function togglePreview() {
         document.getElementById("no-preview-icon").setAttribute("style", "display: none");
     }
 });
+
+function updateKaTeX() {
+    var mathElems = document.getElementsByClassName("katex");
+    var elems = [];
+    for (const i in mathElems) {
+        if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+    }
+
+    elems.forEach(elem => {
+        katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+    });
+}
