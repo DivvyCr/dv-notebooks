@@ -5,6 +5,7 @@ var mde = new EasyMDE({
     maxHeight: "70vh",
     toolbar: false,
     status: false,
+    previewClass: "custom-editor-preview",
     previewRender: function (plaintext, preview) {
         var req = new XMLHttpRequest();
         req.onreadystatechange = () => {

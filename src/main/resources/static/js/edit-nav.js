@@ -1,11 +1,11 @@
 var parentIdTextElement = document.getElementById("parent-id");
 var precedingIdTextElement = document.getElementById("preceding-id");
 
-if (document.getElementById("menu-active") == null || typeof (document.getElementById("menu-active")) == "undefined") {
+if (document.getElementById("active-chapter") == null || typeof (document.getElementById("active-chapter")) == "undefined") {
     // Creating a new chapter; need placeholder element to enable ordering:
     var placeholderContents = document.createElement("a");
     placeholderContents.innerHTML = "New Chapter";
-    placeholderContents.id = "menu-active";
+    placeholderContents.id = "active-chapter";
     placeholderContents.className = document.getElementById(precedingIdTextElement.value).firstElementChild.className;
 
     var placeholder = document.createElement("li");
@@ -15,8 +15,8 @@ if (document.getElementById("menu-active") == null || typeof (document.getElemen
     placeholderParent.appendChild(placeholder);
 }
 
-var movableElement = document.getElementById("menu-active").parentElement;
-var movableElementText = document.getElementById("menu-active");
+var movableElement = document.getElementById("active-chapter").parentElement;
+var movableElementText = document.getElementById("active-chapter");
 
 window.addEventListener("load", (event) => {
     // init parent-id
@@ -35,11 +35,14 @@ window.addEventListener("unload", (event) => {
 });
 
 var titleTextElement = document.getElementById("edit-title");
+var topbarTitleTextElement = document.getElementsByClassName("topbar-title")[0];
 titleTextElement.addEventListener("keyup", (event) => {
     if (titleTextElement.value) {
         movableElementText.innerHTML = titleTextElement.value;
+        topbarTitleTextElement.innerHTML = titleTextElement.value;
     } else {
         movableElementText.innerHTML = "New Chapter";
+        topbarTitleTextElement.innerHTML = "New Chapter";
     }
 });
 
@@ -71,12 +74,12 @@ inButton.addEventListener('click', function moveIn() {
     movableElement.previousElementSibling.lastElementChild.appendChild(movableElement);
 
     // Adjust class:
-    switch (document.getElementById("menu-active").className) {
-        case "menu-lvl-0":
-            document.getElementById("menu-active").className = "menu-lvl-1";
+    switch (document.getElementById("active-chapter").className) {
+        case "chapter-lvl-0":
+            document.getElementById("active-chapter").className = "chapter-lvl-1";
             break;
-        case "menu-lvl-1":
-            document.getElementById("menu-active").className = "menu-lvl-deep";
+        case "chapter-lvl-1":
+            document.getElementById("active-chapter").className = "chapter-deep";
             break;
     }
 
@@ -93,12 +96,12 @@ outButton.addEventListener('click', function moveOut() {
     }
 
     // Adjust class:
-    switch (document.getElementById("menu-active").className) {
-        case "menu-lvl-1":
-            document.getElementById("menu-active").className = "menu-lvl-0";
+    switch (document.getElementById("active-chapter").className) {
+        case "chapter-lvl-1":
+            document.getElementById("active-chapter").className = "chapter-lvl-0";
             break;
-        case "menu-lvl-deep":
-            document.getElementById("menu-active").className = "menu-lvl-1";
+        case "chapter-deep":
+            document.getElementById("active-chapter").className = "chapter-lvl-1";
             break;
     }
 });

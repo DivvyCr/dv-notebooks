@@ -1,22 +1,17 @@
 package com.dvc.notes;
 
-import java.net.http.HttpRequest;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.config.authentication.JdbcUserServiceBeanDefinitionParser;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -25,23 +20,30 @@ public class AdminConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	http.csrf().disable()
-	    .authorizeHttpRequests((requests) -> requests
-				   .requestMatchers("/edit/**").hasRole("ADMIN")
-				   .anyRequest().permitAll())
-	    .formLogin((form) -> form.loginPage("/login").permitAll())
-	    .logout((logout) -> logout.permitAll().logoutSuccessUrl("/"));
+        http.csrf().disable()
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/edit/**").hasRole("ADMIN")
+                        .requestMatchers("/make/**").hasRole("ADMIN")
+                        .requestMatchers("/delete/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
+                .formLogin((form) -> form.loginPage("/login").permitAll())
+                .logout((logout) -> logout.permitAll().logoutSuccessUrl("/"));
 
-	return http.build();
+        return http.build();
     }
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Bean
     public UserDetailsService userDetailsService() {
-	UserDetails user = User.withUsername("admin")
-	    .password("{bcrypt}$2a$16$AbwQYwp9zO62yPDT/N2EbeACtGjbX7Nb4p.5s3GgvDG2m9dpeUHVq")
-	    .roles("ADMIN")
-	    .build();
+        String password = jdbcTemplate.queryForObject("SELECT password FROM editors WHERE username = 'admin'", String.class);
 
-	return new InMemoryUserDetailsManager(user);
+        UserDetails user = User.withUsername("admin")
+                .password(password)
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user);
     }
 }

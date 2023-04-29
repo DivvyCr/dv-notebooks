@@ -1,0 +1,161 @@
+@import "colours.css";
+
+@import "aside.css";
+@import "book-menu.css";
+@import "chapter-menu.css";
+@import "code.css";
+@import "error.css";
+@import "input.css";
+@import "plugins.css";
+@import "tables.css";
+@import "topbar.css";
+
+html {
+    font-family: 'Noto Sans', sans-serif;
+    line-height: 1.5;
+}
+
+@media (min-width: 600px) {
+    html {
+        font-size: 1.2rem;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: var(--default-foreground);
+    background-color: var(--default-background);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+h1,
+h2 {
+    margin: 2rem 0 .5rem;
+    color: var(--highlight-foreground);
+}
+
+h3,
+h4,
+h5,
+h6 {
+    margin: 1.5rem 0 .5rem;
+    color: var(--highlight-foreground);
+}
+
+@media (max-width: 600px) {
+    h1,
+    h2 {
+        margin: 1rem 0 .5rem;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: .75rem 0 .5rem;
+    }
+}
+
+p {
+    margin: 0 0 .5rem;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:not(.active):hover {
+    color: var(--gold-accent);
+}
+
+button {
+    all: unset;
+}
+
+.content-wrap {
+    padding: 1rem .5rem 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    :not(main) > .content-wrap {
+        padding: 0 1rem 1rem;
+    }
+
+    .menu-shown .content {
+        max-height: calc(30vh - 80px);
+    }
+}
+
+.content {
+    padding: 0 10px;
+    margin: 0 auto;
+    max-width: 800px;
+    max-height: 100vh;
+    transition: max-height .5s;
+}
+
+strong {
+    font-weight: 600;
+    color: var(--gold-accent);
+}
+
+em {
+    font-style: normal;
+    color: var(--highlight-foreground);
+}
+
+ul {
+    margin: 0;
+}
+
+.footer-button {
+    line-height: 40px;
+    cursor: pointer;
+}
+
+.footer-button > .fa-solid {
+    line-height: inherit;
+    transition: color 0.2s;
+}
+
+.footer-button > .fa-solid:hover {
+    color: var(--gold-accent);
+}
+
+.icon-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    padding: .5rem;
+    border-radius: .3rem;
+    background-color: var(--highlight-background);
+}
+
+.icon-button:hover {
+    cursor: pointer;
+    color: var(--gold-accent);
+}
+
+.editing {
+    max-width: 60vw;
+}
+
+.editing h1 {
+    margin-top: .5rem;
+}
+
+.editing h2 {
+    margin-top: .5rem;
+}

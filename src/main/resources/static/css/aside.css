@@ -1,0 +1,66 @@
+table.aside {
+    table-layout: fixed;
+    position: relative;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0 1.5rem;
+}
+
+table.aside strong {
+    color: white;
+}
+
+td.aside-content {
+    padding: 1rem 1rem 0.5rem;
+    width: 100%;
+    background: var(--highlight-background);
+    border-radius: 10px;
+}
+
+td.aside-content.tip strong {
+    color: var(--aside-tip-highlight);
+}
+
+td.aside-content.note strong {
+    color: var(--aside-note-highlight);
+}
+
+td.aside-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-0.5rem, -50%);
+}
+
+.aside-icon {
+    padding: 0.1rem 0.5rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    color: #eeeeee;
+    font-weight: 600;
+    user-select: none;
+}
+
+.aside-icon.tip {
+    background: var(--aside-tip-icon);
+}
+
+.aside-icon.tip::after {
+    content: "TIP";
+}
+
+.aside-icon.note {
+    background: var(--aside-note-icon);
+}
+
+.aside-icon.note::after {
+    content: "NOTE";
+}
+
+.aside-icon.code {
+    background: var(--aside-code-icon);
+}
+
+.aside-icon.code::after {
+    content: "CODE";
+}

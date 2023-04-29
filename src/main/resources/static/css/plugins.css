@@ -1,0 +1,30 @@
+/* MathJax: */
+
+mjx-container {
+    z-index: 99;
+}
+
+mjx-container[display="true"] {
+    color: var(--highlight-foreground);
+}
+
+/* EasyMDE: */
+
+#edit-title, .EasyMDEContainer {
+    font-family: 'Chivo Mono', monospace !important;
+}
+
+.CodeMirror {
+    border: none !important;
+    border-radius: .5rem;
+    font-size: inherit !important;
+    color: inherit !important;
+    background-color: #2a2a2a !important;
+}
+
+.custom-editor-preview {
+    padding: 1rem;
+    border: .2rem dashed #2a2a2a;
+    background-color: var(--default-background);
+    font-family: 'Noto Sans', sans-serif;
+}

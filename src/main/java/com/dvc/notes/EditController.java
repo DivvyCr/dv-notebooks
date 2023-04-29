@@ -1,11 +1,15 @@
 package com.dvc.notes;
 
 import com.dvc.notes.admonition.AdmonitionExtension;
+import com.dvc.notes.relations.*;
+import com.vladsch.flexmark.ext.attributes.AttributesExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,10 +18,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,12 +26,18 @@ import java.util.List;
 @Controller
 public class EditController {
 
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    private String badRequest() {
+        return "400";
+    }
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private void addNavigationEntries(Integer bookId, Model model) {
         String q = "SELECT * FROM chapters_navtree WHERE bookid = ? ORDER BY agg_priority DESC";
-        List<BetterNav> navTree = jdbcTemplate.query(q, new BetterNavRowMapper(), bookId);
+        List<Navigation> navTree = jdbcTemplate.query(q, new NavigationRowMapper(), bookId);
         Collections.reverse(navTree);
         navTree.removeAll(Collections.singleton(null));
         model.addAttribute("navTree", navTree);
@@ -50,7 +57,7 @@ public class EditController {
         Integer bookId = jdbcTemplate.queryForObject(q, Integer.class, precedingChapterId);
         addNavigationEntries(bookId, model);
 
-        return "chapter-editor";
+        return "editors/chapter-editor";
     }
 
     @PostMapping("/make/chapter")
@@ -79,7 +86,7 @@ public class EditController {
         Integer bookId = jdbcTemplate.queryForObject(q2, Integer.class, chapterId);
         addNavigationEntries(bookId, model);
 
-        return "chapter-editor";
+        return "editors/chapter-editor";
     }
 
     @PostMapping("/edit/chapter")
@@ -96,7 +103,10 @@ public class EditController {
     @PostMapping(value = "/edit/chapter/preview", consumes = "text/markdown", produces = "text/markdown")
     public ResponseEntity<String> generatePreview(@RequestBody String temp) {
         MutableDataSet options = new MutableDataSet()
-                .set(Parser.EXTENSIONS, List.of(AdmonitionExtension.create()));
+                .set(Parser.EXTENSIONS, List.of(
+                        AdmonitionExtension.create(),
+                        AttributesExtension.create(),
+                        TablesExtension.create()));
 
         Parser p = Parser.builder(options).build();
         Node md = p.parse(temp);
@@ -116,7 +126,7 @@ public class EditController {
     @GetMapping({"/make/book", "/make/book/"})
     public String newBook(Model model) {
         model.addAttribute("bookObj", new Book());
-        return "book-editor";
+        return "editors/book-editor";
     }
 
     @PostMapping({"/make/book", "/make/book/"})
@@ -139,7 +149,7 @@ public class EditController {
         String q = "SELECT * FROM books WHERE id = ?";
         Book book = jdbcTemplate.queryForObject(q, new BookRowMapper(), bookId);
         model.addAttribute("bookObj", book);
-        return "book-editor";
+        return "editors/book-editor";
     }
 
     @PostMapping("/edit/book")

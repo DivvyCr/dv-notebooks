@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html class="menu-shown">
+<html lang="en" class="chapters-shown">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Title</title>
-  <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/topbar.css">
-  <link rel="stylesheet" href="/css/menu.css">
-  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/all.css">
   <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+      href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script>
@@ -20,17 +23,17 @@
   <th:block layout:fragment="extra-head"></th:block>
 </head>
 <body>
-<nav id="menu">
-  <div class="menu-scroll">
+<nav id="chapter-select">
+  <div class="chapter-scroll">
     <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
   </div>
-  <div layout:fragment="menu-options"></div>
+  <div layout:fragment="chapter-options"></div>
 </nav>
 
 <main>
   <div id="topbar">
     <div class="topbar-buttons">
-      <button id="toggle-menu" class="topbar-button" type="button" title="Toggle Sidebar">
+      <button id="toggle-chapter-select" class="topbar-button" type="button" title="Toggle Sidebar">
         <i class="fa-solid fa-bars"></i>
       </button>
     </div>
@@ -46,19 +49,19 @@
   </div>
 </main>
 
-<nav id="mobile-menu">
-  <button id="toggle-mobile-menu" class="mm-button" type="button" title="Toggle Menu">
+<nav id="alt-chapter-select">
+  <button id="toggle-alt-chapter-select" class="alt-chapters-button" type="button" title="Toggle Menu">
     <i class="fa-solid fa-chevron-up"></i>
   </button>
-  <div class="mm-top">
-    <h1 class="mm-title" th:utext="${chapterObj?.title}"></h1>
+  <div class="alt-chapters-top">
+    <h1 class="alt-chapters-title" th:utext="${chapterObj?.title}"></h1>
   </div>
-  <div class="menu-scroll">
+  <div class="chapter-scroll">
     <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
   </div>
-  <div layout:fragment="menu-options"></div>
+  <div layout:fragment="chapter-options"></div>
 </nav>
-<script src="/js/menu.js"></script>
+<script src="/js/chapter-select.js"></script>
 <th:block layout:fragment="extra-scripts"></th:block>
 </body>
 </html>

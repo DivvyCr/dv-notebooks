@@ -1,4 +1,4 @@
-package com.dvc.notes;
+package com.dvc.notes.relations;
 
 import java.io.Serializable;
 

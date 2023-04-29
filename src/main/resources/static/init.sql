@@ -2,8 +2,8 @@ CREATE TABLE books
 (
     id          INTEGER GENERATED ALWAYS AS IDENTITY,
     code        VARCHAR(5)   NOT NULL CHECK (code ~ '^[a-zA-Z0-9_\-]+$'), /* don't allow whitespace */
-    title       VARCHAR(50)  NOT NULL,
-    description VARCHAR(200) NOT NULL,
+    title       VARCHAR(64)  NOT NULL,
+    description VARCHAR(256) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (code)
 );
@@ -11,7 +11,7 @@ CREATE TABLE books
 CREATE TABLE chapters
 (
     id      INTEGER GENERATED ALWAYS AS IDENTITY,
-    title   VARCHAR(50) NOT NULL,
+    title   TEXT NOT NULL,
     content TEXT,
     PRIMARY KEY (id)
 );
@@ -26,6 +26,13 @@ CREATE TABLE navigation
     FOREIGN KEY (chapterid) REFERENCES chapters (id) ON DELETE CASCADE,
     FOREIGN KEY (parent_chapterid) REFERENCES chapters (id),
     UNIQUE (bookid, chapterid)
+);
+
+CREATE TABLE editors
+(
+    username VARCHAR(32) NOT NULL,
+    password TEXT        NOT NULL,
+    PRIMARY KEY (username)
 );
 
 CREATE VIEW chapter_links AS
@@ -111,7 +118,8 @@ BEGIN
 
     UPDATE navigation
     SET priority = priority - 1
-    WHERE priority >= delete_priority AND priority > 1
+    WHERE priority >= delete_priority
+      AND priority > 1
       AND (parent_chapterid = delete_parentid OR (parent_chapterid IS NULL AND delete_parentid IS NULL));
 
     IF delete_parentid = delete_chapterid THEN
@@ -145,6 +153,7 @@ BEGIN
     INSERT INTO books (code, title, description)
     VALUES (bookCode, bookTitle, bookDescription)
     RETURNING id INTO new_bookid;
+
     PERFORM create_chapter(new_bookid, NULL, NULL, bookCode || ' Intro', ''); /* PERFORM instead of SELECT since we are ignoring return value */
 
     RETURN new_bookid;
@@ -178,7 +187,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION append_chapter(parentId INTEGER, precedingId INTEGER, chapterTitle VARCHAR(50), chapterContent TEXT)
+CREATE OR REPLACE FUNCTION append_chapter(parentId INTEGER, precedingId INTEGER, chapterTitle VARCHAR(50),
+                                          chapterContent TEXT)
     RETURNS INTEGER AS
 $$
 DECLARE
@@ -191,7 +201,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_chapter(bookId INTEGER, parentId INTEGER, precedingId INTEGER, chapterTitle VARCHAR(50),
+CREATE OR REPLACE FUNCTION create_chapter(bookId INTEGER, parentId INTEGER, precedingId INTEGER,
+                                          chapterTitle VARCHAR(50),
                                           chapterContent TEXT)
     RETURNS INTEGER AS
 $$
@@ -238,7 +249,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION delete_chapter(deleteChapterId INTEGER)
-RETURNS INTEGER AS
+    RETURNS INTEGER AS
 $$
 DECLARE
     delete_bookid INTEGER;

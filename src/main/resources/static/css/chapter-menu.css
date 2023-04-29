@@ -1,0 +1,202 @@
+#chapter-select {
+    z-index: 99;
+    position: fixed;
+    inset: 0 auto 0 0;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    overscroll-behavior-y: contain;
+    background-color: #151515;
+    font-size: .9rem;
+    box-shadow: 0.25rem 0 10px #121212;
+    transition: transform 0.3s;
+}
+
+.chapters-hidden #chapter-select {
+    transform: translateX(calc(0px - 300px));
+}
+
+/* TODO: Improve media queries (currently edge cases exist?) */
+
+@media (max-width: 600px) {
+    #chapter-select {
+        display: none;
+    }
+}
+
+@media (min-width: 600px) {
+    main {
+        margin-left: 300px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .chapters-hidden main {
+        margin-left: 0;
+    }
+}
+
+.chapter-scroll {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+    background-color: #151515;
+}
+
+.chapter-active {
+    color: #e9c56d;
+}
+
+#active-chapter {
+    color: #e9c56d;
+}
+
+.chapter-list {
+    list-style: none outside none;
+    line-height: 1.8em;
+    margin: 0;
+    color: #a6a6a6;
+}
+
+.chapter-scroll > ul {
+    padding: 0
+}
+
+ul ul {
+    padding-left: 0.8rem;
+}
+
+.chapter-list li {
+    margin-top: .25rem;
+}
+
+.chapter-lvl-0 {
+    font-weight: 600;
+}
+
+.chapter-lvl-1 {
+    font-weight: 300;
+}
+
+.chapter-deep {
+    font-size: .8rem;
+}
+
+/* ALTERNATIVE (SMALLER): */
+
+#alt-chapter-select { /* TODO: Reuse #chapter-select style. */
+    z-index: 99;
+    position: fixed;
+    inset: 0 0 100vh 0;
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+    overscroll-behavior-y: contain;
+    background-color: #151515;
+    font-size: .9rem;
+    transform: translateY(25vh);
+    transition: transform 0.3s;
+}
+
+.chapters-hidden #alt-chapter-select {
+    transform: translateY(calc(100vh - 80px));
+}
+
+#alt-chapter-select .chapter-scroll {
+    padding-top: 0;
+}
+
+.alt-chapters-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    box-shadow: 0 -10px 5px #151515;
+}
+
+.alt-chapters-title {
+    margin: 0;
+    color: #606060;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.alt-chapters-button {
+    position: absolute;
+    top: -25px;
+    width: 100%;
+    text-align: center;
+    color: #a6a6a6;
+    font-size: 2rem;
+    line-height: 1;
+    transform: scaleY(-1);
+    transition: transform 0.4s;
+}
+
+.chapters-hidden .alt-chapters-button {
+    transform: scaleY(1);
+}
+
+@media (min-width: 600px) {
+    #alt-chapter-select {
+        display: none;
+    }
+}
+
+/* ACTIONS: */
+
+.chapter-select-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin: 1rem 0;
+    font-size: 1rem;
+}
+
+.edit-buttons-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin: 1rem 0;
+    font-size: 1.5rem;
+}
+
+.move-buttons-group {
+    display: grid;
+    margin: 2rem 0;
+    gap: 0.2rem;
+    grid-template-areas:
+	"up up"
+	"left right"
+	"down down";
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    font-size: 1rem;
+}
+
+.move-up {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: up;
+}
+
+.move-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: left;
+}
+
+.move-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: right;
+}
+
+.move-down {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: down;
+}

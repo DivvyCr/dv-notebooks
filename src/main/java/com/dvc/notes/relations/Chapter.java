@@ -1,8 +1,10 @@
-package com.dvc.notes;
+package com.dvc.notes.relations;
 
-import java.util.Arrays;
 import java.io.Serializable;
+import java.util.List;
 
+import com.vladsch.flexmark.ext.attributes.AttributesExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.parser.Parser;
 import com.dvc.notes.admonition.AdmonitionExtension;
@@ -26,8 +28,11 @@ public class Chapter implements Serializable {
 	this.mdContent = mdContent;
 
 	MutableDataSet options = new MutableDataSet()
-	    .set(Parser.EXTENSIONS, Arrays.asList(AdmonitionExtension.create()));
-	
+	        .set(Parser.EXTENSIONS, List.of(
+                    AdmonitionExtension.create(),
+                    AttributesExtension.create(),
+                    TablesExtension.create()));
+
 	Parser p = Parser.builder(options).build();
 	Node md = p.parse(mdContent);
 	HtmlRenderer html = HtmlRenderer.builder(options).build();

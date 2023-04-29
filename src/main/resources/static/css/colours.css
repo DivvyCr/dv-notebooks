@@ -1,0 +1,17 @@
+:root {
+    --default-foreground: #a6a6a6;
+    --default-background: #191919;
+    --highlight-foreground: #dcdcdc;
+    --highlight-background: #232323;
+    --gold-accent: #e9c56d;
+    --blue-accent: #83a2ec;
+
+    --aside-tip-icon: #28a428;
+    --aside-note-icon: #4170e2;
+    --aside-code-icon: #845cd6;
+
+    --aside-tip-highlight: #70dc70;
+    --aside-note-highlight: #6d91e9;
+
+    --error: #f47174;
+}

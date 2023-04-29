@@ -1,5 +1,7 @@
 package com.dvc.notes;
 
+import com.dvc.notes.relations.Book;
+import com.dvc.notes.relations.BookRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -22,7 +24,7 @@ public class HomeController {
     }
 
     @GetMapping("/login")
-    public String temp2(Model model) {
+    public String login(Model model) {
         return "login";
     }
 
