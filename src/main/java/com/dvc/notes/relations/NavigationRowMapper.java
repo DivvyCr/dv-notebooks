@@ -36,7 +36,7 @@ public class NavigationRowMapper implements RowMapper<Navigation> {
 		});
 	}
 
-	// TODO: improve/change whole navigation system
+	// TODO: consider improving (?) whole navigation system
 
 	Navigation newNav = new Navigation(noteID, noteTitle, noteLink, notePath, noteChildren);
 

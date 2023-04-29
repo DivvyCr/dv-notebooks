@@ -119,9 +119,14 @@ public class EditController {
 
     @PostMapping("/delete/chapter")
     public String deleteChapter(@RequestParam("id") Integer chapterId, Model model) {
-        jdbcTemplate.update("CALL delete_chapter(?)", chapterId);
+        SimpleJdbcCall deleteChapterCall = new SimpleJdbcCall(jdbcTemplate).withFunctionName("delete_chapter");
+        SqlParameterSource deleteChapterParameters = new MapSqlParameterSource()
+                .addValue("deleteChapterId", chapterId);
+        Integer bookId = deleteChapterCall.executeFunction(Integer.class, deleteChapterParameters);
 
-        return "redirect:/"; // TODO
+        String bookCode = jdbcTemplate.queryForObject("SELECT code FROM books WHERE id = ?", String.class, bookId);
+
+        return "redirect:/read/" + bookCode;
     }
 
     @GetMapping({"/make/book", "/make/book/"})
@@ -167,7 +172,7 @@ public class EditController {
     public String deleteBook(@RequestParam("id") Integer bookId, Model model) {
         jdbcTemplate.update("CALL delete_book(?)", bookId);
 
-        return "redirect:/"; // TODO
+        return "redirect:/";
     }
 
 }
