@@ -15,3 +15,8 @@
 
     --error: #f47174;
 }
+
+:root {
+    --chapter-menu-width: 300px;
+    --alt-chapter-menu-header-size: 80px;
+}

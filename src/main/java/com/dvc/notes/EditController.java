@@ -30,7 +30,7 @@ public class EditController {
     @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)
     private String badRequest() {
-        return "400";
+        return "errors/400";
     }
 
     @Autowired

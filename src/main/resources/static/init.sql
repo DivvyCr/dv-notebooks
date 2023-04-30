@@ -154,7 +154,7 @@ BEGIN
     VALUES (bookCode, bookTitle, bookDescription)
     RETURNING id INTO new_bookid;
 
-    PERFORM create_chapter(NULL, NULL, bookCode || ' Intro', ''); /* PERFORM instead of SELECT since we are ignoring return value */
+    PERFORM create_chapter(new_bookid, NULL, NULL, bookCode || ' Intro', ''); /* PERFORM instead of SELECT since we are ignoring return value */
 
     RETURN new_bookid;
 END;
@@ -196,12 +196,12 @@ DECLARE
     new_chapterid INTEGER;
 BEGIN
     SELECT bookid FROM navigation WHERE chapterid = precedingId INTO new_bookid;
-    SELECT create_chapter(parentId, precedingId, chapterTitle, chapterContent) INTO new_chapterid;
+    SELECT create_chapter(new_bookid, parentId, precedingId, chapterTitle, chapterContent) INTO new_chapterid;
     RETURN new_chapterid;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_chapter(parentId INTEGER, precedingId INTEGER,
+CREATE OR REPLACE FUNCTION create_chapter(book_id INTEGER, parentId INTEGER, precedingId INTEGER,
                                           chapterTitle VARCHAR(50),
                                           chapterContent TEXT)
     RETURNS INTEGER AS
@@ -231,7 +231,7 @@ BEGIN
       AND (parent_chapterid = new_parentid);
 
     INSERT INTO navigation (bookid, chapterid, parent_chapterid, priority)
-    VALUES (bookId, new_chapterid, new_parentid, new_priority);
+    VALUES (book_id, new_chapterid, new_parentid, new_priority);
 
     RETURN new_chapterid;
 END;

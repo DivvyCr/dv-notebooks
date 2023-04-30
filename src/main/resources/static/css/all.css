@@ -1,23 +1,18 @@
-@import "colours.css";
-
-@import "aside.css";
-@import "book-menu.css";
-@import "chapter-menu.css";
-@import "code.css";
+@import "constants.css";
 @import "error.css";
-@import "input.css";
+@import "menus.css";
 @import "plugins.css";
-@import "tables.css";
 @import "topbar.css";
 
 html {
     font-family: 'Noto Sans', sans-serif;
+    font-size: 1.2rem;
     line-height: 1.5;
 }
 
-@media (min-width: 600px) {
+@media (max-width: 600px) {
     html {
-        font-size: 1.2rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -82,17 +77,18 @@ button {
 }
 
 .content-wrap {
-    padding: 0rem .5rem 4rem;
+    padding: 0 .5rem 4rem;
     flex: 1;
 }
 
 @media (max-width: 600px) {
-    :not(main) > .content-wrap {
-        padding: 0 1rem 1rem;
+    .content-wrap {
+        /* Ensure that content is visible at the bottom of the page. */
+        padding: 0 1rem calc(var(--alt-chapter-menu-header-size)*1.25);
     }
 
     .menu-shown .content {
-        max-height: calc(30vh - 80px);
+        max-height: calc(30vh - var(--alt-chapter-menu-header-size));
     }
 }
 
@@ -116,6 +112,227 @@ em {
 ul {
     margin: 0;
 }
+
+/* TABLES */
+
+table {
+    margin: 0 auto;
+}
+
+table.wide {
+    width: 90%;
+}
+
+table.narrow {
+    width: 60%;
+}
+
+@media (max-width: 600px) {
+    table {
+        width: 100% !important;
+    }
+}
+
+th,
+td {
+    padding: .5rem .75rem;
+}
+
+td {
+    font-size: .9em;
+}
+
+/* Cross-style: */
+
+table.cross {
+    table-layout: fixed;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+table.cross th:nth-child(1) {
+    font-weight: 600;
+    border-right: 2px solid var(--highlight-foreground) !important;
+}
+
+table.cross td:nth-child(1) {
+    font-weight: 600;
+    border-right: 2px solid var(--highlight-foreground) !important;
+}
+
+table.cross th {
+    border-bottom: 2px solid var(--highlight-foreground) !important;
+}
+
+/* Lined-style: */
+
+table.lined {
+    border-collapse: collapse;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    table.lined {
+        display: block;
+        white-space: nowrap;
+        overflow-x: scroll;
+    }
+}
+
+table.lined thead {
+    border-bottom: 2px solid var(--highlight-foreground);
+}
+
+table.lined tr:nth-child(2n),
+table.lined th {
+    background-color: var(--highlight-background);
+}
+
+table.lined th {
+    color: var(--highlight-foreground);
+}
+
+/* ASIDE */
+
+table.aside {
+    table-layout: fixed;
+    position: relative;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0 1.5rem;
+}
+
+table.aside strong {
+    color: white;
+}
+
+td.aside-content {
+    padding: 1rem 1rem 0.5rem;
+    width: 100%;
+    background: var(--highlight-background);
+    border-radius: 10px;
+}
+
+td.aside-content.tip strong {
+    color: var(--aside-tip-highlight);
+}
+
+td.aside-content.note strong {
+    color: var(--aside-note-highlight);
+}
+
+td.aside-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-0.5rem, -50%);
+}
+
+.aside-icon {
+    padding: 0.1rem 0.5rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    color: #eeeeee;
+    font-weight: 600;
+    user-select: none;
+}
+
+.aside-icon.tip {
+    background: var(--aside-tip-icon);
+}
+
+.aside-icon.tip::after {
+    content: "TIP";
+}
+
+.aside-icon.note {
+    background: var(--aside-note-icon);
+}
+
+.aside-icon.note::after {
+    content: "NOTE";
+}
+
+.aside-icon.code {
+    background: var(--aside-code-icon);
+}
+
+.aside-icon.code::after {
+    content: "CODE";
+}
+
+/* CODE SNIPPETS */
+
+table.code-snippet {
+    table-layout: fixed;
+    position: relative;
+    width: 75%;
+    border-collapse: collapse;
+}
+
+td.code-content {
+    position: relative;
+    z-index: 9;
+    padding: 0;
+    background: #232323;
+    border-radius: 0 0 8px 8px;
+    transform: translateY(-6px);
+}
+
+td.code-caption {
+    position: relative;
+    z-index: 10;
+    background: #323232;
+    border-radius: 8px;
+}
+
+.code-caption-text {
+    margin-left: 10px;
+    font-weight: 600;
+    color: var(--highlight-foreground);
+}
+
+/* INPUT */
+
+.basic-input {
+    width: 100%;
+    padding: .4rem;
+    margin: 1rem 0;
+    border: 0;
+    border-radius: .5rem;
+    box-sizing: border-box;
+    font-family: 'Chivo Mono', monospace;
+    font-size: inherit;
+    color: var(--highlight-foreground);
+    background-color: #2a2a2a;
+}
+
+.basic-input:focus {
+    outline: none;
+}
+
+.password-group {
+    display: flex;
+    justify-content: center;
+}
+
+.password-input {
+    padding: 6px;
+    border: 0;
+    font-size: 20px;
+    color: var(--highlight-foreground);
+    background-color: #333;
+}
+
+.password-input.error {
+    border-bottom: 2px solid var(--error);
+}
+
+.password-input:focus {
+    outline: none;
+}
+
+/* MISCELLANEOUS */
 
 .footer-button {
     line-height: 40px;
