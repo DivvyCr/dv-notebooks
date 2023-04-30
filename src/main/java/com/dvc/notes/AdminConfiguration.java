@@ -50,6 +50,6 @@ public class AdminConfiguration {
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(16);
     }
 }
