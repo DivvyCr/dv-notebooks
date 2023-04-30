@@ -24,7 +24,7 @@ body {
 
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: calc(var(--vh, 1vh)*100);
 }
 
 html,
@@ -99,12 +99,12 @@ main {
     }
 
     .chapters-hidden main {
-        max-height: calc(100vh - var(--alt-chapter-menu-header-height));
+        max-height: calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-header-height));
         transition: max-height 0.3s;
     }
 
     .chapters-shown main {
-        max-height: calc(100vh - var(--alt-chapter-menu-height));
+        max-height: calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-height));
         transition: max-height 0.3s;
     }
 }

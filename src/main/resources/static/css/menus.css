@@ -171,18 +171,18 @@ ul ul {
 #alt-chapter-select { /* TODO: Reuse #chapter-select style. */
     z-index: 99;
     position: fixed;
-    inset: 0 0 100vh 0;
+    inset: 0 0 calc(var(--vh, 1vh)*100) 0;
     display: flex;
     flex-direction: column;
     height: var(--alt-chapter-menu-height);
     overscroll-behavior-y: contain;
     background-color: #151515;
-    transform: translateY(calc(100vh - var(--alt-chapter-menu-height)));
+    transform: translateY(calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-height)));
     transition: transform 0.3s;
 }
 
 .chapters-hidden #alt-chapter-select {
-    transform: translateY(calc(100vh - var(--alt-chapter-menu-header-height)));
+    transform: translateY(calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-header-height)));
 }
 
 #alt-chapter-select .chapter-scroll {

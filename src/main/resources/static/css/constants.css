@@ -14,10 +14,10 @@
     --aside-note-highlight: #6d91e9;
 
     --error: #f47174;
-}
 
-:root {
     --chapter-menu-width: 300px;
     --alt-chapter-menu-height: 80vh;
     --alt-chapter-menu-header-height: 8vh;
+
+    --vh: 1vh; /* Placeholder, see /js/mobile-height.js */
 }
