@@ -1,10 +1,95 @@
+/* BOOK MENU */
+
+.book-select {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding-bottom: 20px;
+}
+
+.book-select > * {
+    margin-top: 2rem;
+}
+
+.book-button {
+    display: grid;
+    grid-template-areas:
+    "edit-icon title"
+    "description description";
+    grid-template-columns: minmax(0, auto) 1fr;
+    width: 40%;
+    min-height: 100px;
+    cursor: pointer;
+    padding: 0 1rem .5rem;
+    border-top: 4px solid #303030;
+    border-radius: 7px;
+    background: #202020;
+    transition: all 0.3s ease;
+    word-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+    .book-button {
+        width: 100%;
+        border-top: 4px solid var(--gold-accent);
+    }
+}
+
+.book-button > h2 {
+    margin-top: .75rem;
+    grid-area: title;
+}
+
+@media (max-width: 600px) {
+    .book-button > h2 {
+        margin-top: .5rem;
+    }
+}
+
+.book-button > p {
+    grid-area: description;
+}
+
+.book-button > a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: .5rem;
+    margin-top: .75rem;
+    margin-bottom: .5rem;
+    grid-area: edit-icon;
+}
+
+.book-button:hover {
+    border-top: 4px solid var(--gold-accent);
+    transform: scale(1.1);
+}
+
+.book-edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    font-size: 2rem;
+    background: #1f1f1f;
+}
+
+.book-edit-button:hover {
+    border: none;
+    color: var(--gold-accent);
+    font-size: 3rem;
+    transform: scale(0.95);
+}
+
+/* CHAPTER MENU */
+
 #chapter-select {
     z-index: 99;
     position: fixed;
     inset: 0 auto 0 0;
     display: flex;
     flex-direction: column;
-    width: 300px;
+    width: var(--chapter-menu-width);
     overscroll-behavior-y: contain;
     background-color: #151515;
     font-size: .9rem;
@@ -13,7 +98,7 @@
 }
 
 .chapters-hidden #chapter-select {
-    transform: translateX(calc(0px - 300px));
+    transform: translateX(calc(0px - var(--chapter-menu-width)));
 }
 
 /* TODO: Improve media queries (currently edge cases exist?) */
@@ -26,7 +111,7 @@
 
 @media (min-width: 600px) {
     main {
-        margin-left: 300px;
+        margin-left: var(--chapter-menu-width);
         transition: margin-left 0.3s ease;
     }
 
@@ -98,7 +183,7 @@ ul ul {
 }
 
 .chapters-hidden #alt-chapter-select {
-    transform: translateY(calc(100vh - 80px));
+    transform: translateY(calc(100vh - var(--alt-chapter-menu-header-size)));
 }
 
 #alt-chapter-select .chapter-scroll {
@@ -109,7 +194,7 @@ ul ul {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 80px;
+    height: var(--alt-chapter-menu-header-size);
     box-shadow: 0 -10px 5px #151515;
 }
 
