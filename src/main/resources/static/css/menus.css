@@ -142,6 +142,12 @@
     color: #a6a6a6;
 }
 
+@media (max-width: 600px) {
+    .chapter-list {
+        font-size: 1.3rem;
+    }
+}
+
 .chapter-scroll > ul {
     padding: 0
 }
@@ -160,10 +166,6 @@ ul ul {
 
 .chapter-lvl-1 {
     font-weight: 300;
-}
-
-.chapter-deep {
-    font-size: .8rem;
 }
 
 /* ALTERNATIVE (SMALLER): */
