@@ -18,5 +18,6 @@
 
 :root {
     --chapter-menu-width: 300px;
-    --alt-chapter-menu-header-size: 80px;
+    --alt-chapter-menu-height: 80vh;
+    --alt-chapter-menu-header-height: 8vh;
 }

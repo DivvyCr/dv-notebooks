@@ -174,16 +174,15 @@ ul ul {
     inset: 0 0 100vh 0;
     display: flex;
     flex-direction: column;
-    height: 75vh;
+    height: var(--alt-chapter-menu-height);
     overscroll-behavior-y: contain;
     background-color: #151515;
-    font-size: .9rem;
-    transform: translateY(25vh);
+    transform: translateY(calc(100vh - var(--alt-chapter-menu-height)));
     transition: transform 0.3s;
 }
 
 .chapters-hidden #alt-chapter-select {
-    transform: translateY(calc(100vh - var(--alt-chapter-menu-header-size)));
+    transform: translateY(calc(100vh - var(--alt-chapter-menu-header-height)));
 }
 
 #alt-chapter-select .chapter-scroll {
@@ -192,10 +191,13 @@ ul ul {
 
 .alt-chapters-top {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: var(--alt-chapter-menu-header-size);
-    box-shadow: 0 -10px 5px #151515;
+    justify-content: space-around;
+    height: var(--alt-chapter-menu-header-height);
+    box-shadow: 0 -10px 5px #121212;
+    box-sizing: border-box;
+    padding: 5px 0 10px;
 }
 
 .alt-chapters-title {
@@ -206,19 +208,10 @@ ul ul {
 }
 
 .alt-chapters-button {
-    position: absolute;
-    top: -25px;
-    width: 100%;
     text-align: center;
     color: #a6a6a6;
     font-size: 2rem;
     line-height: 1;
-    transform: scaleY(-1);
-    transition: transform 0.4s;
-}
-
-.chapters-hidden .alt-chapters-button {
-    transform: scaleY(1);
 }
 
 @media (min-width: 600px) {

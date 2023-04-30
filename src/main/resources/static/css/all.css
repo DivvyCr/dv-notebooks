@@ -24,11 +24,12 @@ body {
 
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
 }
 
-main {
-    flex: 1;
+html,
+body {
+    overflow: hidden;
 }
 
 h1,
@@ -77,18 +78,34 @@ button {
 }
 
 .content-wrap {
-    padding: 0 .5rem 4rem;
+    padding: 0 .5rem;
+    margin-bottom: 4rem;
     flex: 1;
+}
+
+main {
+    flex: 1;
+    overflow-y: scroll;
 }
 
 @media (max-width: 600px) {
     .content-wrap {
-        /* Ensure that content is visible at the bottom of the page. */
-        padding: 0 1rem calc(var(--alt-chapter-menu-header-size)*1.25);
+        padding: 0 1rem;
+        margin-bottom: 1rem;
     }
 
-    .menu-shown .content {
-        max-height: calc(30vh - var(--alt-chapter-menu-header-size));
+    .chapters-shown .content-wrap {
+        margin-bottom: 0;
+    }
+
+    .chapters-hidden main {
+        max-height: calc(100vh - var(--alt-chapter-menu-header-height));
+        transition: max-height 0.3s;
+    }
+
+    .chapters-shown main {
+        max-height: calc(100vh - var(--alt-chapter-menu-height));
+        transition: max-height 0.3s;
     }
 }
 
@@ -116,6 +133,7 @@ ul {
 /* TABLES */
 
 table {
+    width: 100%;
     margin: 0 auto;
 }
 

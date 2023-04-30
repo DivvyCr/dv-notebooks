@@ -49,12 +49,12 @@
 </main>
 
 <nav id="alt-chapter-select">
-  <button id="toggle-alt-chapter-select" class="alt-chapters-button" type="button" title="Toggle Menu">
-    <i class="fa-solid fa-chevron-up"></i>
+  <button id="toggle-alt-chapter-select" type="button" title="Toggle Menu">
+    <div class="alt-chapters-top">
+        <i class="fa-solid fa-minus alt-chapters-button"></i>
+      <h1 class="alt-chapters-title" th:utext="${chapterObj?.title}"></h1>
+    </div>
   </button>
-  <div class="alt-chapters-top">
-    <h1 class="alt-chapters-title" th:utext="${chapterObj?.title}"></h1>
-  </div>
   <div class="chapter-scroll">
     <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
   </div>
