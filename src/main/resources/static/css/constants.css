@@ -19,6 +19,6 @@
 
     --chapter-menu-width: 300px;
     --alt-chapter-menu-height: calc(var(--vh, 1vh)*80);
-    --alt-chapter-menu-header-height: calc(var(--vh, 1vh)*8);
+    --alt-chapter-menu-header-height: max(4rem, calc(var(--vh, 1vh)*10));
 
 }
