@@ -15,9 +15,10 @@
 
     --error: #f47174;
 
-    --chapter-menu-width: 300px;
-    --alt-chapter-menu-height: 80vh;
-    --alt-chapter-menu-header-height: 8vh;
-
     --vh: 1vh; /* Placeholder, see /js/mobile-height.js */
+
+    --chapter-menu-width: 300px;
+    --alt-chapter-menu-height: calc(var(--vh, 1vh)*80);
+    --alt-chapter-menu-header-height: calc(var(--vh, 1vh)*8);
+
 }
