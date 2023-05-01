@@ -33,7 +33,7 @@
 }
 
 .CodeMirror-selectedtext {
-    filter: invert(1);
+    filter: invert(1) !important;
 }
 
 .custom-editor-preview {

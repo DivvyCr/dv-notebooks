@@ -116,12 +116,14 @@ main {
     transition: max-height .5s;
 }
 
-strong {
+strong,
+.cm-strong { /* CodeMirror WYSIWYG class. */
     font-weight: 600;
     color: var(--gold-accent);
 }
 
-em {
+em,
+.cm-em { /* CodeMirror WYSIWYG class. */
     font-style: normal;
     color: var(--highlight-foreground);
 }
