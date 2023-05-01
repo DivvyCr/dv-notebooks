@@ -1,16 +1,8 @@
 package com.dvc.notes.relations;
 
 import java.io.Serializable;
-import java.util.List;
 
-import com.vladsch.flexmark.ext.attributes.AttributesExtension;
-import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
-import com.vladsch.flexmark.ext.tables.TablesExtension;
-import com.vladsch.flexmark.util.ast.Node;
-import com.vladsch.flexmark.parser.Parser;
-import com.dvc.notes.admonition.AdmonitionExtension;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.dvc.notes.MarkdownRenderer;
 
 public class Chapter implements Serializable {
     private Integer id;
@@ -27,19 +19,7 @@ public class Chapter implements Serializable {
         this.id = id;
         this.title = title;
         this.mdContent = mdContent;
-
-        MutableDataSet options = new MutableDataSet()
-                .set(AdmonitionExtension.ALLOW_LAZY_CONTINUATION, false) // Must indent admonition content!
-                .set(Parser.EXTENSIONS, List.of(
-                    AdmonitionExtension.create(),
-                    AttributesExtension.create(),
-                        GitLabExtension.create(),
-                        TablesExtension.create()));
-
-        Parser p = Parser.builder(options).build();
-        Node md = p.parse(mdContent);
-        HtmlRenderer html = HtmlRenderer.builder(options).build();
-        this.htmlContent = html.render(md);
+        this.htmlContent = MarkdownRenderer.renderMarkdown(this.mdContent);
     }
 
     public Integer getId() {

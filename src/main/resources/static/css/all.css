@@ -352,6 +352,15 @@ td.code-caption {
 
 /* MISCELLANEOUS */
 
+.index-button {
+    font-size: .6em;
+    color: var(--default-foreground);
+}
+
+.index-button:hover {
+    color: var(--gold-accent);
+}
+
 .footer-button {
     line-height: 40px;
     cursor: pointer;
@@ -385,7 +394,7 @@ td.code-caption {
     max-width: 60vw;
 }
 
-.editing h1 {
+.editing h1:not(.index-placeholder) {
     margin-top: .5rem;
 }
 

@@ -1,14 +1,6 @@
 package com.dvc.notes;
 
-import com.dvc.notes.admonition.AdmonitionExtension;
 import com.dvc.notes.relations.*;
-import com.vladsch.flexmark.ext.attributes.AttributesExtension;
-import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
-import com.vladsch.flexmark.ext.tables.TablesExtension;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.ast.Node;
-import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.error.Mark;
 
 import java.util.Collections;
 import java.util.List;
@@ -108,21 +101,9 @@ public class EditController {
     }
 
     @PostMapping(value = "/edit/chapter/preview", consumes = "text/markdown", produces = "text/markdown")
-    public ResponseEntity<String> generatePreview(@RequestBody String temp) {
-        MutableDataSet options = new MutableDataSet()
-                .set(AdmonitionExtension.ALLOW_LAZY_CONTINUATION, false) // Must indent admonition content!
-                .set(Parser.EXTENSIONS, List.of(
-                        AdmonitionExtension.create(),
-                        AttributesExtension.create(),
-                        GitLabExtension.create(),
-                        TablesExtension.create()));;
-
-        Parser p = Parser.builder(options).build();
-        Node md = p.parse(temp);
-        HtmlRenderer html = HtmlRenderer.builder(options).build();
-        String res = html.render(md);
-
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<String> generatePreview(@RequestBody String markdown) {
+        String preview = MarkdownRenderer.renderMarkdown(markdown);
+        return new ResponseEntity<>(preview, HttpStatus.OK);
     }
 
     @PostMapping("/delete/chapter")

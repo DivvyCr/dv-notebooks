@@ -1,0 +1,31 @@
+<html layout:decorate="~{layouts/base.html}" lang="en">
+<th:block layout:fragment="extra-head">
+  <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+  <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+</th:block>
+
+<div layout:fragment="content"
+     class="content editing">
+  <h1 class="index-placeholder">Welcome!</h1>
+  <form method="POST">
+    <textarea id="edit-content" name="new-content" type="text" rows="5" th:utext="${curContent}"></textarea>
+
+    <div class="edit-buttons-group">
+      <button class="icon-button" type="submit">
+        <i class="fa-solid fa-floppy-disk"></i>
+      </button>
+      <button class="icon-button" type="button" id="preview-button">
+        <i id="preview-icon" class="fa-solid fa-eye"></i>
+        <i id="no-preview-icon" class="fa-solid fa-eye-slash" style="display: none"></i>
+      </button>
+    </div>
+  </form>
+</div>
+
+<th:block layout:fragment="extra-scripts">
+  <script src="/js/edit-md.js"></script>
+<!--  <script th:inline="javascript">-->
+<!--    mde.value(/*[[${curContent}]]*/);-->
+<!--  </script>-->
+</th:block>
+</html>
