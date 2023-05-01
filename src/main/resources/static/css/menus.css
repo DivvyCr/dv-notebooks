@@ -30,10 +30,24 @@
     word-wrap: break-word;
 }
 
+.book-button:hover {
+    border-top: 4px solid var(--gold-accent);
+    transform: scale(1.1);
+}
+
 @media (max-width: 600px) {
     .book-button {
         width: 100%;
         border-top: 4px solid var(--gold-accent);
+    }
+
+    .book-button:hover {
+        transform: scale(1);
+    }
+
+    .book-button:focus {
+        border-top: 4px solid var(--highlight-foreground);
+        transition: all 0s;
     }
 }
 
@@ -60,11 +74,6 @@
     margin-top: .75rem;
     margin-bottom: .5rem;
     grid-area: edit-icon;
-}
-
-.book-button:hover {
-    border-top: 4px solid var(--gold-accent);
-    transform: scale(1.1);
 }
 
 .book-edit-button {

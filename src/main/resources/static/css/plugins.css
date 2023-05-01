@@ -17,6 +17,7 @@
 
 #edit-title, .EasyMDEContainer {
     font-family: 'Chivo Mono', monospace !important;
+    font-variant-ligatures: none;
 }
 
 .CodeMirror {
@@ -58,6 +59,7 @@ code[class*="language-"],
 pre[class*="language-"] {
     color: #c3c3c3;
     font-family: 'Chivo Mono', Consolas, Monaco, 'Andale Mono', monospace;
+    font-variant-ligatures: none;
     direction: ltr;
     text-align: left;
     white-space: pre;
