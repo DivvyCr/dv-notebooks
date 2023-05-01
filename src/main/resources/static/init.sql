@@ -15,6 +15,8 @@ CREATE TABLE chapters
     content TEXT,
     PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX home_chapter ON chapters (title) WHERE title = '.index';
+INSERT INTO chapters (title, content) VALUES ('.index', '');
 
 CREATE TABLE navigation
 (

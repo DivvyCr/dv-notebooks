@@ -1,1 +1,0 @@
-My name is *Andrei* and these are my notes.
