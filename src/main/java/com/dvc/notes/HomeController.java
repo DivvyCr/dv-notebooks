@@ -43,6 +43,7 @@ public class HomeController {
 
     @GetMapping("/edit/index")
     public String editIndex(Model model) {
+        model.addAttribute("pageTitle", "Index - Editing Crib Sheet");
         model.addAttribute("curContent", getIndexMd());
         return "editors/index-editor";
     }
