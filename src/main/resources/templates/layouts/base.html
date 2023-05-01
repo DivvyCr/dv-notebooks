@@ -15,17 +15,23 @@
       href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet">
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js" integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+        integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+          integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+          crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+          integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
           onload="renderMathInElement(document.body);"></script>
 
   <th:block layout:fragment="extra-head"></th:block>
 </head>
 <body>
-<div class="content-wrap">
-  <div layout:fragment="content"></div>
-</div>
+<main>
+  <div class="content-wrap">
+    <div layout:fragment="content"></div>
+  </div>
+</main>
 
 <div style="min-height: 50px; text-align: center">
   <button sec:authorize="!hasRole('ADMIN')" class="footer-button" type="button" onclick="location.href='/login'">
@@ -35,6 +41,7 @@
     <i class="fa-solid fa-right-from-bracket"></i>
   </button>
 </div>
+
 <th:block layout:fragment="extra-scripts"></th:block>
 </body>
 </html>

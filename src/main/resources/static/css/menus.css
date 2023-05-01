@@ -2,8 +2,10 @@
 
 .book-select {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
     padding-bottom: 20px;
 }
 
@@ -17,8 +19,8 @@
     "edit-icon title"
     "description description";
     grid-template-columns: minmax(0, auto) 1fr;
-    width: 40%;
-    min-height: 100px;
+    width: 80%;
+    box-sizing: border-box;
     cursor: pointer;
     padding: 0 1rem .5rem;
     border-top: 4px solid #303030;
@@ -69,6 +71,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100px;
     border: none;
     font-size: 2rem;
     background: #1f1f1f;
@@ -110,7 +113,7 @@
 }
 
 @media (min-width: 600px) {
-    main {
+    main.with-chapter-select {
         margin-left: var(--chapter-menu-width);
         transition: margin-left 0.3s ease;
     }

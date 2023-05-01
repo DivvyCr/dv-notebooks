@@ -394,6 +394,12 @@ td.code-caption {
     max-width: 60vw;
 }
 
+@media (max-width: 600px) {
+    .editing {
+        max-width: 100%;
+    }
+}
+
 .editing h1:not(.index-placeholder) {
     margin-top: .5rem;
 }
