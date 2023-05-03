@@ -79,7 +79,6 @@ button {
 
 .content-wrap {
     padding: 0 .5rem;
-    margin-bottom: 4rem;
     flex: 1;
 }
 
@@ -165,7 +164,6 @@ td {
 /* Cross-style: */
 
 table.cross {
-    table-layout: fixed;
     border-collapse: collapse;
     text-align: center;
 }
