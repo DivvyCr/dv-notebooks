@@ -32,6 +32,10 @@
     border-left: 2px solid var(--highlight-foreground) !important;
 }
 
+.CodeMirror pre.CodeMirror-line {
+    font-variant-ligatures: none !important;
+}
+
 .CodeMirror-selectedtext {
     filter: invert(1) !important;
 }
