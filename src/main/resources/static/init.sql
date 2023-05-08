@@ -278,14 +278,16 @@ $$
 DECLARE
     old_parentid   INTEGER;
     old_priority   INTEGER;
+    new_parentid   INTEGER;
     new_priority   INTEGER;
-    priority_shift INTEGER;
 BEGIN
     SELECT priority FROM navigation WHERE chapterid = moveChapterId INTO old_priority;
     SELECT parent_chapterid FROM navigation WHERE chapterid = moveChapterId INTO old_parentid;
 
     IF newParentId IS NULL THEN
-        SELECT moveChapterId INTO newParentId;
+        SELECT moveChapterId INTO new_parentid;
+    ELSE
+        SELECT newParentId INTO new_parentid;
     END IF;
 
     IF newPrecedingId IS NULL THEN
@@ -294,25 +296,32 @@ BEGIN
         SELECT priority + 1 FROM navigation WHERE chapterid = newPrecedingId INTO new_priority;
     END IF;
 
-    IF old_parentid = newParentId THEN
+    IF old_parentid = new_parentid THEN
         IF new_priority > old_priority THEN
-            SELECT -1 INTO priority_shift;
-        END IF;
-        IF new_priority < old_priority THEN
-            SELECT 1 INTO priority_shift;
+            UPDATE navigation
+            SET priority = priority - 1
+            WHERE priority <= new_priority
+              AND priority > old_priority
+              /* Second part of OR accounts for 'root' entries, where ParentID == ChapterID: */
+              AND (parent_chapterid = new_parentid OR (new_parentid = moveChapterId AND parent_chapterid = chapterid));
+
+            SELECT new_priority - 1 INTO new_priority; /* Account for the shift of other priorities. */
         END IF;
 
-        UPDATE navigation
-        SET priority = priority + priority_shift
-        WHERE priority <= new_priority
-          AND priority > old_priority
-          AND parent_chapterid = newParentId;
+        IF new_priority < old_priority THEN
+            UPDATE navigation
+            SET priority = priority + 1
+            WHERE priority >= new_priority
+              AND priority < old_priority
+              /* Second part of OR accounts for 'root' entries, where ParentID == ChapterID: */
+              AND (parent_chapterid = new_parentid OR (new_parentid = moveChapterId AND parent_chapterid = chapterid));
+        END IF;
     ELSE
         UPDATE navigation SET priority = priority - 1 WHERE priority > old_priority AND parent_chapterid = old_parentid;
-        UPDATE navigation SET priority = priority + 1 WHERE priority >= new_priority AND parent_chapterid = newParentId;
+        UPDATE navigation SET priority = priority + 1 WHERE priority >= new_priority AND parent_chapterid = new_parentid;
     END IF;
 
-    UPDATE navigation SET parent_chapterid = newParentId, priority = new_priority WHERE chapterid = moveChapterId;
+    UPDATE navigation SET parent_chapterid = new_parentid, priority = new_priority WHERE chapterid = moveChapterId;
 END;
 $$ LANGUAGE plpgsql;
 
