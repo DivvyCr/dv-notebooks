@@ -15,7 +15,7 @@
 
 /* EasyMDE: */
 
-#edit-title, .EasyMDEContainer {
+#edit-title, .EasyMDEContainer, .CodeMirror {
     font-family: 'Chivo Mono', monospace !important;
     font-variant-ligatures: none;
 }
@@ -30,6 +30,10 @@
 
 .CodeMirror-cursor { /* This is how CodeMirror sets cursor... */
     border-left: 2px solid var(--highlight-foreground) !important;
+}
+
+.CodeMirror pre.CodeMirror-line {
+    font-variant-ligatures: none !important;
 }
 
 .CodeMirror-selectedtext {
