@@ -129,12 +129,14 @@ em,
 
 ul {
     margin: 0;
+    padding-left: 1em;
 }
 
 li:not(.chapter-list li) {
     position: relative;
     list-style: none;
     padding-left: 1em;
+    margin-bottom: 0.5em;
 }
 
 li:not(.chapter-list li)::before {
