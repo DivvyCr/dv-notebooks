@@ -1,7 +1,7 @@
 <html layout:decorate="~{layouts/base.html}">
 <div layout:fragment="content"
      class="content">
-  <h1>
+  <h1 id="welcome">
     Welcome!
     <a sec:authorize="hasRole('ADMIN')" href="/edit/index"><i class="fa-solid fa-pen-to-square index-button"></i></a>
   </h1>
@@ -25,4 +25,32 @@
     </button>
   </div>
 </div>
+<th:block layout:fragment="extra-scripts">
+  <script>
+      const beib = document.getElementById("beib").closest(".aside");
+      beib.style.display="none";
+
+      let isBeib = false;
+      function toggleBeib() {
+          if (isBeib) {
+              beib.style.display="none";
+              isBeib = false;
+          } else {
+              beib.style.display="block";
+              isBeib = true;
+          }
+      }
+
+      let x = 0;
+      document.getElementById("welcome").style.userSelect="none";
+      document.getElementById("welcome").addEventListener("click", (e) => {
+          if (x < 4) {
+              x = x + 1;
+          } else {
+              x = 0;
+              toggleBeib();
+          }
+      });
+  </script>
+</th:block>
 </html>
