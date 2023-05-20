@@ -230,7 +230,7 @@ BEGIN
     UPDATE navigation
     SET priority = priority + 1
     WHERE priority >= new_priority
-      AND (parent_chapterid = new_parentid);
+      AND (parent_chapterid = new_parentid OR (new_parentid = new_chapterid AND parent_chapterid = chapterid));
 
     INSERT INTO navigation (bookid, chapterid, parent_chapterid, priority)
     VALUES (book_id, new_chapterid, new_parentid, new_priority);
@@ -298,14 +298,14 @@ BEGIN
 
     IF old_parentid = new_parentid THEN
         IF new_priority > old_priority THEN
+            SELECT new_priority - 1 INTO new_priority; /* Account for the shift of other priorities. */
+
             UPDATE navigation
             SET priority = priority - 1
             WHERE priority <= new_priority
               AND priority > old_priority
               /* Second part of OR accounts for 'root' entries, where ParentID == ChapterID: */
               AND (parent_chapterid = new_parentid OR (new_parentid = moveChapterId AND parent_chapterid = chapterid));
-
-            SELECT new_priority - 1 INTO new_priority; /* Account for the shift of other priorities. */
         END IF;
 
         IF new_priority < old_priority THEN

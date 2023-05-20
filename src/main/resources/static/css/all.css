@@ -109,7 +109,7 @@ main {
 }
 
 .content {
-    padding: 0 10px;
+    padding: 0 10px 2rem;
     margin: 0 auto;
     max-width: 800px;
     transition: max-height .5s;

@@ -2,7 +2,7 @@ var mde = new EasyMDE({
     element: document.getElementById("edit-content"),
     shortcuts: {"togglePreview": "Ctrl-Alt-P"},
     placeholder: "Content...",
-    maxHeight: "70vh",
+    maxHeight: "50vh",
     toolbar: false,
     status: false,
     previewClass: "custom-editor-preview",
