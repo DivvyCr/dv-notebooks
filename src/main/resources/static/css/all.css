@@ -305,7 +305,7 @@ td.aside-icon {
 table.code-snippet {
     table-layout: fixed;
     position: relative;
-    width: 75%;
+    width: 100%;
     border-collapse: collapse;
 }
 
