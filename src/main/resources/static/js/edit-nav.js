@@ -11,8 +11,7 @@ if (document.getElementById("active-chapter") == null || typeof (document.getEle
     var placeholder = document.createElement("li");
     placeholder.appendChild(placeholderContents);
 
-    var placeholderParent = document.getElementById(precedingIdTextElement.value).parentElement;
-    placeholderParent.appendChild(placeholder);
+    document.getElementById(precedingIdTextElement.value).insertAdjacentElement('afterend', placeholder);
 }
 
 var movableElement = document.getElementById("active-chapter").parentElement;
