@@ -49,14 +49,16 @@ CREATE VIEW chapters_tree AS
 WITH RECURSIVE cte AS (SELECT bookid,
                               chapterid,
                               parent_chapterid,
-                              priority::TEXT AS agg_priority
+                              LPAD(priority::TEXT, 2, '0') AS agg_priority
+                              -- the padding is necessary to ensure correct sorting, under the assumption <100 chapters per level, per book
                        FROM navigation
                        WHERE parent_chapterid = chapterid
                        UNION ALL
                        SELECT nav.bookid,
                               nav.chapterid,
                               nav.parent_chapterid,
-                              cte.agg_priority || '.' || nav.priority
+                              cte.agg_priority || '.' || LPAD(nav.priority::TEXT, 2, '0')
+                              -- the padding is necessary to ensure correct sorting, under the assumption <100 chapters per level, per book
                        FROM cte
                                 JOIN navigation nav
                                      ON cte.chapterid = nav.parent_chapterid AND cte.chapterid != nav.chapterid)
@@ -280,7 +282,9 @@ DECLARE
     old_priority   INTEGER;
     new_parentid   INTEGER;
     new_priority   INTEGER;
+    rel_bookid INTEGER;
 BEGIN
+    SELECT bookid FROM navigation WHERE chapterid = moveChapterId INTO rel_bookid;
     SELECT priority FROM navigation WHERE chapterid = moveChapterId INTO old_priority;
     SELECT parent_chapterid FROM navigation WHERE chapterid = moveChapterId INTO old_parentid;
 
@@ -302,7 +306,8 @@ BEGIN
 
             UPDATE navigation
             SET priority = priority - 1
-            WHERE priority <= new_priority
+            WHERE bookid = rel_bookid
+              AND priority <= new_priority
               AND priority > old_priority
               /* Second part of OR accounts for 'root' entries, where ParentID == ChapterID: */
               AND (parent_chapterid = new_parentid OR (new_parentid = moveChapterId AND parent_chapterid = chapterid));
@@ -311,7 +316,8 @@ BEGIN
         IF new_priority < old_priority THEN
             UPDATE navigation
             SET priority = priority + 1
-            WHERE priority >= new_priority
+            WHERE bookid = rel_bookid
+              AND priority >= new_priority
               AND priority < old_priority
               /* Second part of OR accounts for 'root' entries, where ParentID == ChapterID: */
               AND (parent_chapterid = new_parentid OR (new_parentid = moveChapterId AND parent_chapterid = chapterid));
