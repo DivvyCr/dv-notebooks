@@ -1,11 +1,49 @@
-@import "constants.css";
 @import "error.css";
 @import "menus.css";
 @import "plugins.css";
 @import "topbar.css";
 
+:root {
+    --default-foreground: #a1a1a1;
+    --default-background: #111111;
+    --highlight-foreground: #dcdcdc;
+    --highlight-background: #1b1b1b;
+    --gold-accent: #e9c56d;
+    --blue-accent: #83a2ec;
+
+    --aside-tip-icon: #28a428;
+    --aside-note-icon: #4170e2;
+    --aside-code-icon: #845cd6;
+
+    --aside-tip-highlight: #70dc70;
+    --aside-note-highlight: #6d91e9;
+
+    --error: #f47174;
+
+    --vh: 1vh; /* Placeholder, see /js/mobile-height.js */
+
+    --chapter-menu-width: 300px;
+    --alt-chapter-menu-height: calc(var(--vh, 1vh)*80);
+    --alt-chapter-menu-header-height: max(4rem, calc(var(--vh, 1vh)*10));
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url("../fonts/Nunito.ttf");
+}
+
+@font-face {
+    font-family: 'Caveat Brush';
+    src: url("../fonts/CaveatBrush.ttf");
+}
+
+@font-face {
+    font-family: 'Outfit';
+    src: url("../fonts/Outfit.ttf");
+}
+
 html {
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     line-height: 1.5;
 }
@@ -21,15 +59,6 @@ body {
     padding: 0;
     color: var(--default-foreground);
     background-color: var(--default-background);
-
-    display: flex;
-    flex-direction: column;
-    height: calc(var(--vh, 1vh)*100);
-}
-
-html,
-body {
-    overflow: hidden;
 }
 
 h1,
@@ -42,6 +71,7 @@ h3,
 h4,
 h5,
 h6 {
+    font-family: 'Outfit', sans-serif;
     margin: 1.5rem 0 .5rem;
     color: var(--highlight-foreground);
 }
@@ -77,14 +107,41 @@ button {
     all: unset;
 }
 
-.content-wrap {
-    padding: 0 .5rem;
-    flex: 1;
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 1rem;
+}
+
+header h1 {
+    margin: 0;
+}
+
+h1.header-left {
+    font-family: Outfit, sans-serif;
+}
+
+h1.header-right {
+    font-family: Caveat Brush, serif;
 }
 
 main {
-    flex: 1;
-    overflow-y: scroll;
+    width: 45vw;
+    margin: 0 auto;
+}
+
+nav {
+    position: fixed;
+    left: 27.5vw; /* Dynamically updated with JS. */
+    top: 1.5rem;
+    padding-right: 2rem;
+    filter: opacity(0.25);
+    transition: filter 0.2s;
+}
+
+nav:hover {
+    filter: opacity(1);
 }
 
 @media (max-width: 600px) {
@@ -109,10 +166,6 @@ main {
 }
 
 .content {
-    padding: 0 10px 2rem;
-    margin: 0 auto;
-    max-width: 800px;
-    transition: max-height .5s;
 }
 
 strong,
@@ -125,6 +178,9 @@ em,
 .cm-em { /* CodeMirror WYSIWYG class. */
     font-style: normal;
     color: var(--highlight-foreground);
+    border: 1px dotted var(--highlight-foreground);
+    border-radius: .2rem;
+    padding: 0 .2rem;
 }
 
 ul {

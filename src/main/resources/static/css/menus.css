@@ -140,18 +140,18 @@
 }
 
 .chapter-active {
-    color: #e9c56d;
+    color: var(--gold-accent);
 }
 
 #active-chapter {
-    color: #e9c56d;
+    color: var(--gold-accent);
 }
 
 .chapter-list {
     list-style: none outside none;
-    line-height: 1.8em;
     margin: 0;
     color: #a6a6a6;
+    font-family: Outfit, sans-serif;
 }
 
 @media (max-width: 600px) {
@@ -172,12 +172,16 @@ ul ul {
     margin-top: .25rem;
 }
 
+a + .chapter-list > li { /* First item is closer to its parent. */
+    margin-top: 0;
+}
+
 .chapter-lvl-0 {
     font-weight: 600;
 }
 
 .chapter-lvl-1 {
-    font-weight: 300;
+    font-weight: 400;
 }
 
 /* ALTERNATIVE (SMALLER): */

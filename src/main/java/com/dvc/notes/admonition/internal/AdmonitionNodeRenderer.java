@@ -104,6 +104,12 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
                     .attr(Attribute.CLASS_ATTR, "line-numbers")
                     .tag("td").line();
 
+            context.renderChildren(node);
+            html.closeTag("td").line();
+            html.closeTag("tr").line();
+            html.closeTag("tbody").line();
+            html.closeTag("table").line();
+
         } else {
             /* RENDER THE FOLLOWING:
               <table class="aside">
@@ -131,18 +137,20 @@ public class AdmonitionNodeRenderer implements PhasedNodeRenderer {
                     .attr(Attribute.CLASS_ATTR, "aside-content")
                     .attr(Attribute.CLASS_ATTR, type)
                     .tag("td").line();
+            context.renderChildren(node);
+            html.closeTag("td").line();
+            html.closeTag("tr").line();
+            html.closeTag("tbody").line();
+            html.closeTag("table").line();
 
             // html.attr(Attribute.CLASS_ATTR, "adm-body").withAttr(ADMONITION_BODY_PART).tag("div").indent().line();
-
-            // context.renderChildren(node);
-
             // html.unIndent().closeTag("div").line();
         }
-        context.renderChildren(node);
-        html.closeTag("td").line();
-        html.closeTag("tr").line();
-        html.closeTag("tbody").line();
-        html.closeTag("table").line();
+//        context.renderChildren(node);
+//        html.closeTag("td").line();
+//        html.closeTag("tr").line();
+//        html.closeTag("tbody").line();
+//        html.closeTag("table").line();
     }
 
     public static class Factory implements NodeRendererFactory {
