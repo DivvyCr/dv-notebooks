@@ -4,8 +4,18 @@
 @import "plugins.css";
 @import "topbar.css";
 
+@font-face {
+    font-family: "Open Sans";
+    src: url("../fonts/OpenSans.ttf");
+}
+
+@font-face {
+    font-family: "Chivo Mono";
+    src: url("../fonts/ChivoMono.ttf");
+}
+
 html {
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 1.2rem;
     line-height: 1.5;
 }
