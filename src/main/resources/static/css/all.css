@@ -7,11 +7,13 @@
 @font-face {
     font-family: "Open Sans";
     src: url("../fonts/OpenSans.ttf");
+    font-display: swap;
 }
 
 @font-face {
     font-family: "Chivo Mono";
     src: url("../fonts/ChivoMono.ttf");
+    font-display: swap;
 }
 
 html {
