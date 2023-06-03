@@ -25,32 +25,5 @@
     </button>
   </div>
 </div>
-<th:block layout:fragment="extra-scripts">
-  <script>
-      const beib = document.getElementById("beib").closest(".aside");
-      beib.style.display="none";
-
-      let isBeib = false;
-      function toggleBeib() {
-          if (isBeib) {
-              beib.style.display="none";
-              isBeib = false;
-          } else {
-              beib.style.display="block";
-              isBeib = true;
-          }
-      }
-
-      let x = 0;
-      document.getElementById("welcome").style.userSelect="none";
-      document.getElementById("welcome").addEventListener("click", (e) => {
-          if (x < 4) {
-              x = x + 1;
-          } else {
-              x = 0;
-              toggleBeib();
-          }
-      });
-  </script>
-</th:block>
+<th:block layout:fragment="extra-scripts"></th:block>
 </html>
