@@ -1,5 +1,5 @@
-var parentIdTextElement = document.getElementById("parent-id");
-var precedingIdTextElement = document.getElementById("preceding-id");
+const parentIdTextElement = document.getElementById("parent-id");
+const precedingIdTextElement = document.getElementById("preceding-id");
 
 if (document.getElementById("active-chapter") == null || typeof (document.getElementById("active-chapter")) == "undefined") {
     // Creating a new chapter; need placeholder element to enable ordering:
@@ -14,12 +14,16 @@ if (document.getElementById("active-chapter") == null || typeof (document.getEle
     document.getElementById(precedingIdTextElement.value).insertAdjacentElement('afterend', placeholder);
 }
 
-var movableElement = document.getElementById("active-chapter").parentElement;
-var movableElementText = document.getElementById("active-chapter");
+let movableElement = document.getElementById("active-chapter").parentElement;
+let movableElementText = document.getElementById("active-chapter");
 
 window.addEventListener("load", (event) => {
     // init parent-id
-    parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+    if (movableElement.parentElement.tagName.toLowerCase() === "ul") {
+        parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+    } else {
+        parentIdTextElement.removeAttribute("value");
+    }
 
     // init preceding-id
     if (movableElement.previousElementSibling != null) {
@@ -30,10 +34,10 @@ window.addEventListener("load", (event) => {
 
     if (titleTextElement.value) {
         movableElementText.innerHTML = titleTextElement.value;
-        topbarTitleTextElement.innerHTML = titleTextElement.value;
+        headerTextElement.innerHTML = titleTextElement.value;
     } else {
         movableElementText.innerHTML = "New Chapter";
-        topbarTitleTextElement.innerHTML = "New Chapter";
+        headerTextElement.innerHTML = "New Chapter";
     }
 });
 
@@ -42,14 +46,14 @@ window.addEventListener("unload", (event) => {
 });
 
 var titleTextElement = document.getElementById("edit-title");
-var topbarTitleTextElement = document.getElementsByClassName("topbar-title")[0];
+var headerTextElement = document.getElementsByClassName("header-left")[0];
 titleTextElement.addEventListener("keyup", (event) => {
     if (titleTextElement.value) {
         movableElementText.innerHTML = titleTextElement.value;
-        topbarTitleTextElement.innerHTML = titleTextElement.value;
+        headerTextElement.innerHTML = titleTextElement.value;
     } else {
         movableElementText.innerHTML = "New Chapter";
-        topbarTitleTextElement.innerHTML = "New Chapter";
+        headerTextElement.innerHTML = "New Chapter";
     }
 });
 
@@ -58,18 +62,26 @@ var inButton = document.getElementById("move-in");
 var outButton = document.getElementById("move-out");
 var downButton = document.getElementById("move-down");
 
+function updateTextElements() {
+    if (movableElement.parentElement.tagName.toLowerCase() === "ul") {
+        parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
+    } else {
+        parentIdTextElement.removeAttribute("value");
+    }
+    if (!movableElement.previousElementSibling) {
+        precedingIdTextElement.removeAttribute("value");
+    } else {
+        precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+    }
+}
+
 upButton.addEventListener('click', function up() {
     movableElement.parentElement.insertBefore(movableElement, movableElement.previousElementSibling);
-    parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
-    if (movableElement.previousElementSibling != null) {
-        precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
-    } else {
-        precedingIdTextElement.removeAttribute("value");
-    }
+    updateTextElements();
 });
 
 inButton.addEventListener('click', function moveIn() {
-    if (movableElement.previousElementSibling == null) return;
+    if (!movableElement.previousElementSibling) return;
 
     if (movableElement.previousElementSibling.lastElementChild.tagName.toLowerCase() !== "ul") {
         // Need to create a sub-list:
@@ -90,16 +102,13 @@ inButton.addEventListener('click', function moveIn() {
             break;
     }
 
-    // Adjust inputs:
-    parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
-    precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+    updateTextElements();
 });
 
 outButton.addEventListener('click', function moveOut() {
-    if (movableElement.parentElement.parentElement.tagName.toLowerCase() == "li") {
+    if (movableElement.parentElement.parentElement.tagName.toLowerCase() === "li") {
         movableElement.parentElement.parentElement.parentElement.insertBefore(movableElement, movableElement.parentElement.parentElement.nextElementSibling);
-        parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
-        precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+        updateTextElements();
     }
 
     // Adjust class:
@@ -115,6 +124,5 @@ outButton.addEventListener('click', function moveOut() {
 
 downButton.addEventListener('click', function down() {
     movableElement.parentElement.insertBefore(movableElement, movableElement.nextElementSibling.nextElementSibling);
-    parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
-    precedingIdTextElement.setAttribute("value", movableElement.previousElementSibling.id);
+    updateTextElements();
 });
