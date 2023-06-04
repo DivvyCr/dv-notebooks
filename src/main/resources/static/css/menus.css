@@ -145,13 +145,16 @@
 
 #active-chapter {
     color: var(--gold-accent);
+    font-weight: 600;
 }
 
 .chapter-list {
     list-style: none outside none;
     margin: 0;
     color: #a6a6a6;
-    font-family: Outfit, sans-serif;
+    font-family: 'p22-underground-pc', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
 }
 
 @media (max-width: 600px) {
@@ -168,13 +171,9 @@ ul ul {
     padding-left: 0.8rem;
 }
 
-.chapter-list li {
-    margin-top: .25rem;
-}
-
-a + .chapter-list > li { /* First item is closer to its parent. */
-    margin-top: 0;
-}
+/*.chapter-list li {*/
+/*    margin-top: .2rem;*/
+/*}*/
 
 .chapter-lvl-0 {
     font-weight: 600;
@@ -244,7 +243,6 @@ a + .chapter-list > li { /* First item is closer to its parent. */
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    margin: 1rem 0;
     font-size: 1rem;
 }
 

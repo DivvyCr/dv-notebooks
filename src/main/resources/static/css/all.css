@@ -27,23 +27,8 @@
     --alt-chapter-menu-header-height: max(4rem, calc(var(--vh, 1vh)*10));
 }
 
-@font-face {
-    font-family: 'Nunito';
-    src: url("../fonts/Nunito.ttf");
-}
-
-@font-face {
-    font-family: 'Caveat Brush';
-    src: url("../fonts/CaveatBrush.ttf");
-}
-
-@font-face {
-    font-family: 'Outfit';
-    src: url("../fonts/Outfit.ttf");
-}
-
 html {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'quasimoda', sans-serif;
     font-size: 1.2rem;
     line-height: 1.5;
 }
@@ -71,9 +56,18 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'p22-underground-pc', sans-serif;
     margin: 1.5rem 0 .5rem;
     color: var(--highlight-foreground);
+    transform: translateX(-.5rem);
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
 }
 
 @media (max-width: 600px) {
@@ -119,16 +113,19 @@ header h1 {
 }
 
 h1.header-left {
-    font-family: Outfit, sans-serif;
+    font-family: 'p22-underground-pc', sans-serif;
+    transform: translateX(-1rem);
 }
 
 h1.header-right {
-    font-family: Caveat Brush, serif;
+    font-family: 'mister-brown', serif;
+    font-size: 2.5rem;
+    line-height: 1;
 }
 
 main {
     width: 45vw;
-    margin: 0 auto;
+    margin: 0 auto 2rem;
 }
 
 nav {
@@ -177,10 +174,8 @@ strong,
 em,
 .cm-em { /* CodeMirror WYSIWYG class. */
     font-style: normal;
+    font-weight: 600;
     color: var(--highlight-foreground);
-    border: 1px dotted var(--highlight-foreground);
-    border-radius: .2rem;
-    padding: 0 .2rem;
 }
 
 ul {
@@ -439,17 +434,16 @@ td.code-caption {
     color: var(--gold-accent);
 }
 
-.footer-button {
+.base-button {
     line-height: 40px;
     cursor: pointer;
 }
 
-.footer-button > .fa-solid {
+.base-button > .fa-solid {
     line-height: inherit;
-    transition: color 0.2s;
 }
 
-.footer-button > .fa-solid:hover {
+.base-button > .fa-solid:hover {
     color: var(--gold-accent);
 }
 

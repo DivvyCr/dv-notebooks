@@ -7,13 +7,12 @@
   <title th:text="${pageTitle}">Crib Sheet</title>
   <link rel="stylesheet" href="/css/all.css">
   <script src="/js/mobile-height.js"></script>
+
+  <!-- FontAwesome -->
   <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-      href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet">
+  <!-- Adobe Fonts -->
+  <link rel="stylesheet" href="https://use.typekit.net/khs4nhq.css">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
         integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
@@ -34,10 +33,10 @@
 </main>
 
 <div style="min-height: 50px; text-align: center">
-  <button sec:authorize="!hasRole('ADMIN')" class="footer-button" type="button" onclick="location.href='/login'">
+  <button sec:authorize="!hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/login'">
     <i class="fa-solid fa-user-shield"></i>
   </button>
-  <button sec:authorize="hasRole('ADMIN')" class="footer-button" type="button" onclick="location.href='/logout'">
+  <button sec:authorize="hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/logout'">
     <i class="fa-solid fa-right-from-bracket"></i>
   </button>
 </div>
