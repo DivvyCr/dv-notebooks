@@ -97,6 +97,12 @@ a:not(.active):hover {
     color: var(--gold-accent);
 }
 
+#welcome {
+    font-family: mister-brown, sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+}
+
 button {
     all: unset;
 }
