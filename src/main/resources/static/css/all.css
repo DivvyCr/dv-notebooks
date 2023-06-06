@@ -59,7 +59,7 @@ h6 {
     font-family: 'p22-underground-pc', sans-serif;
     margin: 1.5rem 0 .5rem;
     color: var(--highlight-foreground);
-    transform: translateX(-.5rem);
+    transform: translateX(-.75rem);
 }
 
 h3 {
@@ -134,19 +134,6 @@ main {
     margin: 0 auto 2rem;
 }
 
-nav {
-    position: fixed;
-    left: 27.5vw; /* Dynamically updated with JS. */
-    top: 1.5rem;
-    padding-right: 2rem;
-    filter: opacity(0.25);
-    transition: filter 0.2s;
-}
-
-nav:hover {
-    filter: opacity(1);
-}
-
 @media (max-width: 600px) {
     .content-wrap {
         padding: 0 1rem;
@@ -174,7 +161,7 @@ nav:hover {
 strong,
 .cm-strong { /* CodeMirror WYSIWYG class. */
     font-weight: 600;
-    color: var(--gold-accent);
+    color: var(--blue-accent);
 }
 
 em,
@@ -182,6 +169,17 @@ em,
     font-style: normal;
     font-weight: 600;
     color: var(--highlight-foreground);
+}
+
+.definition {
+    border-left: .25rem solid var(--gold-accent);
+    padding-left: .5rem;
+    transform: translateX(-.75rem);
+}
+
+.definition strong {
+    font-weight: 600;
+    color: var(--gold-accent);
 }
 
 ul {
@@ -314,6 +312,17 @@ td.aside-content.tip strong {
 }
 
 td.aside-content.note strong {
+    color: var(--aside-note-highlight);
+}
+
+blockquote {
+    margin: 0;
+    padding-left: .5rem;
+    border-left: .25rem solid var(--aside-note-highlight);
+    transform: translateX(-.7rem);
+}
+
+blockquote strong {
     color: var(--aside-note-highlight);
 }
 

@@ -95,6 +95,19 @@
 
 /* CHAPTER MENU */
 
+nav {
+    position: fixed;
+    left: 25vw; /* Dynamically updated with JS. */
+    top: 1.5rem;
+    padding-right: 2rem;
+    filter: opacity(0.25);
+    transition: filter 0.2s;
+}
+
+nav:hover {
+    filter: opacity(1);
+}
+
 #chapter-select {
     z-index: 99;
     position: fixed;
