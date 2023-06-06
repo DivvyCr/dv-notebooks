@@ -30,14 +30,14 @@
   <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
 </nav>
 
-<main>
+<article>
   <header>
     <h1 class="header-left" th:utext="${chapterObj?.title}"></h1>
     <a href="/"><h1 class="header-right">Study Notes</h1></a>
   </header>
 
   <div layout:fragment="content"></div>
-</main>
+</article>
 
 <script src="/js/prism.js"></script>
 <script>
@@ -57,8 +57,8 @@
 </script>
 <script>
   const x = document.getElementById("chapter-navigation");
-  window.onload = () => { x.style.left = "calc(25vw - " + x.offsetWidth + "px)"};
-  window.onresize = () => { x.style.left = "calc(25vw - " + x.offsetWidth + "px)"};
+  window.onload = () => { x.style.left = "calc((100vw - var(--content-width)) / 2 - " + x.offsetWidth + "px)"};
+  window.onresize = () => { x.style.left = "calc((100vw - var(--content-width)) / 2 - " + x.offsetWidth + "px)"};
 </script>
 <th:block layout:fragment="extra-scripts"></th:block>
 </body>

@@ -97,7 +97,7 @@
 
 nav {
     position: fixed;
-    left: 25vw; /* Dynamically updated with JS. */
+    left: calc((100vw - var(--content-width)) / 2); /* Dynamically updated with JS. */
     top: 1.5rem;
     padding-right: 2rem;
     filter: opacity(0.25);

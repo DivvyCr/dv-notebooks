@@ -5,10 +5,10 @@
 
 :root {
     --default-foreground: #a1a1a1;
-    --default-background: #111111;
+    --default-background: #0c0c0c;
     --highlight-foreground: #dcdcdc;
-    --highlight-background: #1b1b1b;
-    --gold-accent: #e9c56d;
+    --highlight-background: #121212;
+    --gold-accent: #ebca78; /* #e9c56d */
     --blue-accent: #83a2ec;
 
     --aside-tip-icon: #28a428;
@@ -25,6 +25,8 @@
     --chapter-menu-width: 300px;
     --alt-chapter-menu-height: calc(var(--vh, 1vh)*80);
     --alt-chapter-menu-header-height: max(4rem, calc(var(--vh, 1vh)*10));
+
+    --content-width: 40vw;
 }
 
 html {
@@ -129,8 +131,8 @@ h1.header-right {
     line-height: 1;
 }
 
-main {
-    width: 45vw;
+main, article {
+    width: var(--content-width);
     margin: 0 auto 2rem;
 }
 
@@ -172,9 +174,11 @@ em,
 }
 
 .definition {
-    border-left: .25rem solid var(--gold-accent);
-    padding-left: .5rem;
-    transform: translateX(-.75rem);
+    padding: .1rem .5rem 0;
+    margin-bottom: .5rem;
+    border-radius: .3rem;
+    border-left: .15rem solid var(--gold-accent);
+    transform: translateX(-.65rem);
 }
 
 .definition strong {
