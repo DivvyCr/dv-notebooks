@@ -1,0 +1,84 @@
+@media screen and (max-width: 600px) {
+    :root {
+        --content-width: 90%;
+    }
+
+    html {
+        font-size: 0.8rem;
+    }
+
+    h1, h2 {
+        margin: 1rem 0 .5rem;
+    }
+
+    h3, h4, h5, h6 {
+        margin: .75rem 0 .5rem;
+    }
+
+    header {
+        margin: 0 0 .5rem;
+    }
+
+    .header-right {
+        line-height: 0.75 !important; /* Adjust 'logo' position */
+    }
+
+    article {
+        width: 100%; /* Necessary to accommodate for box-sizing below */
+        padding: 0 calc((100% - var(--content-width))/2) 2rem; /* Necessary to view translated headings (otherwise hidden by margin) */
+        margin: 0;
+        box-sizing: border-box; /* Necessary to adjust scroll when chapter is being selected. */
+        overflow-y: scroll;
+    }
+
+    .chapters-hidden article {
+        max-height: calc(var(--vh, 1vh)*100 - var(--screen-chapters-header-height));
+        transition: max-height 0.3s;
+    }
+
+    .chapters-shown article {
+        max-height: calc(var(--vh, 1vh)*100 - var(--screen-chapter-navigation-height));
+        transition: max-height 0.3s;
+    }
+
+    table {
+        width: 100% !important;
+    }
+
+    table.lined {
+        display: block;
+        white-space: nowrap;
+        overflow-x: scroll;
+    }
+
+    .editing {
+        max-width: 100%;
+    }
+
+    .book-button {
+        width: 100%;
+        padding: .5rem 1rem 0;
+        margin: 0 0 1.5rem;
+        background: linear-gradient(160deg, var(--highlight-background), transparent 30%);
+    }
+
+    .book-button:focus {
+        border-color: var(--highlight-foreground);
+        transition: all 0s;
+    }
+
+    nav#chapter-navigation {
+        display: none;
+    }
+
+    nav#screen-chapter-navigation {
+        display: flex;
+    }
+
+    .chapter-list {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 600px) {
+}

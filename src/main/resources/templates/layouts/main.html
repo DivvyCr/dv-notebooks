@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="chapters-shown">
+<html lang="en" class="chapters-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,7 +8,9 @@
 
   <title th:text="${pageTitle}">Crib Sheet</title>
   <link rel="stylesheet" href="/css/all.css">
-  <script src="/js/mobile-height.js"></script>
+
+  <!-- Responsive UI for Phones -->
+  <link rel="stylesheet" href="/css/responsive.css" media="(max-width: 600px)">
 
   <!-- FontAwesome -->
   <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
@@ -20,14 +22,25 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js" integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
           onload="renderMathInElement(document.body);"></script>
-
-  <th:block layout:fragment="extra-head"></th:block>
 </head>
 <body>
 
 <nav id="chapter-navigation">
   <div layout:fragment="chapter-options"></div>
   <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
+</nav>
+
+<nav id="screen-chapter-navigation">
+  <button id="toggle-chapter-navigation" type="button" title="Toggle Menu">
+    <div class="screen-chapters-header">
+      <i class="fa-solid fa-minus screen-chapters-button"></i>
+      <h1 class="screen-chapters-label">Table of Contents</h1>
+    </div>
+  </button>
+  <div class="chapter-scroll">
+    <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
+  </div>
+  <div layout:fragment="chapter-options"></div>
 </nav>
 
 <article>
@@ -39,7 +52,6 @@
   <div layout:fragment="content"></div>
 </article>
 
-<script src="/js/prism.js"></script>
 <script>
     (function () {
         document.addEventListener("DOMContentLoaded", function () {
@@ -55,11 +67,9 @@
         });
     })();
 </script>
-<script>
-  const x = document.getElementById("chapter-navigation");
-  window.onload = () => { x.style.left = "calc((100vw - var(--content-width)) / 2 - " + x.offsetWidth + "px)"};
-  window.onresize = () => { x.style.left = "calc((100vw - var(--content-width)) / 2 - " + x.offsetWidth + "px)"};
-</script>
-<th:block layout:fragment="extra-scripts"></th:block>
+<th:block layout:fragment="extra-scripts">
+  <script src="/js/responsive.js"></script>
+  <script src="/js/prism.js"></script>
+</th:block>
 </body>
 </html>

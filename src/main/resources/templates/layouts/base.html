@@ -6,7 +6,10 @@
 
   <title th:text="${pageTitle}">Crib Sheet</title>
   <link rel="stylesheet" href="/css/all.css">
-  <script src="/js/mobile-height.js"></script>
+
+  <!-- Responsive UI for Phones -->
+  <link rel="stylesheet" href="/css/responsive.css" media="(max-width: 600px)">
+  <script src="/js/responsive.js"></script>
 
   <!-- FontAwesome -->
   <script src="https://kit.fontawesome.com/f58d79b7d2.js" crossorigin="anonymous"></script>
@@ -22,8 +25,6 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
           integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
           onload="renderMathInElement(document.body);"></script>
-
-  <th:block layout:fragment="extra-head"></th:block>
 </head>
 <body>
 <main>

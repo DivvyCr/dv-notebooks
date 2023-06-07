@@ -34,22 +34,6 @@
     border-color: var(--highlight-foreground);
 }
 
-@media (max-width: 600px) {
-    .book-button {
-        width: 100%;
-        border-top: 4px solid var(--gold-accent);
-    }
-
-    .book-button:hover {
-        transform: scale(1);
-    }
-
-    .book-button:focus {
-        border-top: 4px solid var(--highlight-foreground);
-        transition: all 0s;
-    }
-}
-
 .book-button > .book-title {
     margin: 0;
     grid-area: title;
@@ -84,7 +68,7 @@
 
 /* CHAPTER MENU */
 
-nav {
+nav#chapter-navigation {
     position: fixed;
     left: calc((100vw - var(--content-width)) / 2); /* Dynamically updated with JS. */
     top: 1.5rem;
@@ -93,52 +77,14 @@ nav {
     transition: filter 0.2s;
 }
 
-nav:hover {
+nav#chapter-navigation:hover {
     filter: opacity(1);
-}
-
-#chapter-select {
-    z-index: 99;
-    position: fixed;
-    inset: 0 auto 0 0;
-    display: flex;
-    flex-direction: column;
-    width: var(--chapter-menu-width);
-    overscroll-behavior-y: contain;
-    background-color: #151515;
-    font-size: .9rem;
-    box-shadow: 0.25rem 0 10px #121212;
-    transition: transform 0.3s;
-}
-
-.chapters-hidden #chapter-select {
-    transform: translateX(calc(0px - var(--chapter-menu-width)));
-}
-
-/* TODO: Improve media queries (currently edge cases exist?) */
-
-@media (max-width: 600px) {
-    #chapter-select {
-        display: none;
-    }
-}
-
-@media (min-width: 600px) {
-    main.with-chapter-select {
-        margin-left: var(--chapter-menu-width);
-        transition: margin-left 0.3s ease;
-    }
-
-    .chapters-hidden main {
-        margin-left: 0;
-    }
 }
 
 .chapter-scroll {
     padding: 1rem;
     overflow-y: auto;
     flex: 1;
-    background-color: #151515;
 }
 
 #active-chapter {
@@ -155,12 +101,6 @@ nav:hover {
     font-weight: 400;
 }
 
-@media (max-width: 600px) {
-    .chapter-list {
-        font-size: 1.3rem;
-    }
-}
-
 .chapter-scroll > ul {
     padding: 0
 }
@@ -168,10 +108,6 @@ nav:hover {
 ul ul {
     padding-left: 0.8rem;
 }
-
-/*.chapter-list li {*/
-/*    margin-top: .2rem;*/
-/*}*/
 
 .chapter-lvl-0 {
     font-weight: 600;
@@ -183,54 +119,62 @@ ul ul {
 
 /* ALTERNATIVE (SMALLER): */
 
-#alt-chapter-select { /* TODO: Reuse #chapter-select style. */
+nav#screen-chapter-navigation {
     z-index: 99;
     position: fixed;
     inset: 0 0 calc(var(--vh, 1vh)*100) 0;
     display: flex;
     flex-direction: column;
-    height: var(--alt-chapter-menu-height);
+    height: var(--screen-chapter-navigation-height);
     overscroll-behavior-y: contain;
-    background-color: #151515;
-    transform: translateY(calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-height)));
+    background-color: var(--default-background);
+    transform: translateY(calc(var(--vh, 1vh)*100 - var(--screen-chapter-navigation-height)));
     transition: transform 0.3s;
 }
 
-.chapters-hidden #alt-chapter-select {
-    transform: translateY(calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-header-height)));
+.chapters-hidden #screen-chapter-navigation {
+    transform: translateY(calc(var(--vh, 1vh)*100 - var(--screen-chapters-header-height)));
 }
 
-#alt-chapter-select .chapter-scroll {
+#screen-chapter-navigation .chapter-scroll {
     padding-top: 0;
 }
 
-.alt-chapters-top {
+.screen-chapters-header {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    height: var(--alt-chapter-menu-header-height);
-    box-shadow: 0 -10px 5px #121212;
+    height: var(--screen-chapters-header-height);
+    background: linear-gradient(180deg, var(--highlight-background), var(--default-background) 80%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
     box-sizing: border-box;
     padding: 5px 0 10px;
 }
 
-.alt-chapters-title {
+.screen-chapters-label {
     margin: 0;
-    color: #606060;
+    color: var(--default-foreground);
     font-size: 1.5rem;
     line-height: 1;
 }
 
-.alt-chapters-button {
+.screen-chapters-button {
     text-align: center;
-    color: #a6a6a6;
+    color: var(--default-foreground);
     font-size: 2rem;
     line-height: 1;
 }
 
-@media (min-width: 600px) {
-    #alt-chapter-select {
+/* Defaults: */
+
+@media not (max-width: 600px) {
+    nav#chapter-navigation {
+        display: block;
+    }
+
+    nav#screen-chapter-navigation {
         display: none;
     }
 }
