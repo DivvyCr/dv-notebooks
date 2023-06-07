@@ -32,7 +32,12 @@
      class="content editing">
   <form method="POST" th:object="${chapterObj}">
     <input id="edit-title" class="basic-input" type="text" th:field="*{title}" autofocus/>
-    <textarea id="edit-content" type="text" rows="5" th:field="*{mdContent}"></textarea>
+    <textarea id="edit-content" type="text" rows="5" th:field="*{mdContent}" style="display: none"></textarea>
+
+    <div id="editor-with-preview">
+      <div id="editor" style="visibility: visible;"></div>
+      <div id="editor-preview" style="visibility: hidden;"></div>
+    </div>
 
     <input id="parent-id" type="hidden" th:field="*{parentID}"/>
     <input id="preceding-id" type="hidden" th:field="*{precedingID}"/>
@@ -54,7 +59,8 @@
 </div>
 
 <th:block layout:fragment="extra-scripts">
-  <script src="/js/edit-md.js"></script>
-  <script src="/js/edit-nav.js"></script>
+  <script src="/js/codemirror-editor.bundle.js"></script>
+  <script src="/js/editing-preview.js"></script>
+  <script src="/js/moving-chapters.js"></script>
 </th:block>
 </html>

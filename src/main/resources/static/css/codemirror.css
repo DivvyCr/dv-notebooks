@@ -1,0 +1,64 @@
+/* This is for the CodeMirror editor. */
+
+#editor-with-preview {
+    position: relative;
+    height: 50vh;
+    width: 100%;
+}
+
+#editor, #editor-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: .3rem;
+    background-color: var(--highlight-background);
+}
+
+#editor-preview {
+    overflow: scroll;
+}
+
+.cm-editor {
+    height: 50vh;
+}
+
+.cm-cursor {
+    border-left: .1rem solid white;
+}
+
+.cm-fat-cursor {
+    background: var(--highlight-foreground) !important;
+    color: var(--default-background) !important;
+}
+
+:not(.cm-focused) .cm-fat-cursor {
+    outline: solid .1rem var(--highlight-foreground);
+}
+
+/* mdHighlighter */
+
+.md-heading {
+    color: var(--gold-accent);
+    font-weight: 600;
+}
+
+.md-bold {
+    color: var(--blue-accent);
+    font-weight: 600;
+}
+
+.md-italic {
+    color: var(--highlight-foreground);
+    font-weight: 600;
+}
+
+[class=md-meta] { /* Select ONLY md-meta. */
+    color: var(--aside-tip-highlight);
+    font-weight: 600;
+}
+
+.md-meta-label {
+    color: var(--aside-tip-highlight);
+}
