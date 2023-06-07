@@ -27,19 +27,17 @@
 </head>
 <body>
 <main>
-  <div class="content-wrap">
-    <div layout:fragment="content"></div>
+  <div layout:fragment="content"></div>
+
+  <div style="min-height: 50px; text-align: center">
+    <button sec:authorize="!hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/login'">
+      <i class="fa-solid fa-user-shield"></i>
+    </button>
+    <button sec:authorize="hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/logout'">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
   </div>
 </main>
-
-<div style="min-height: 50px; text-align: center">
-  <button sec:authorize="!hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/login'">
-    <i class="fa-solid fa-user-shield"></i>
-  </button>
-  <button sec:authorize="hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/logout'">
-    <i class="fa-solid fa-right-from-bracket"></i>
-  </button>
-</div>
 
 <th:block layout:fragment="extra-scripts"></th:block>
 </body>

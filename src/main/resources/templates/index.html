@@ -9,20 +9,21 @@
   <th:block th:utext="${content}"></th:block>
 
   <div class="book-select">
+    <button sec:authorize="hasRole('ADMIN')" class="book-button book-create-button" type="button"
+            th:onclick="location.href='/make/book'">
+      <h2 class="book-title">New</h2>
+      <span class="book-edit-icon"><i class="fa-solid fa-plus"></i></span>
+    </button>
     <th:block th:each="book : ${books}">
       <button class="book-button" type="button"
               th:onclick="'location.href=\'' + @{/read/{x}(x=${book.code})} + '\''">
-        <h2 th:text="${book.title}">course</h2>
-        <p th:text="${book.description}">description</p>
-        <a sec:authorize="hasRole('ADMIN')" th:href="|/edit/book?id=${book.id}|">
+        <h2 class="book-title" th:text="${book.title}">course</h2>
+        <p class="book-description" th:text="${book.description}">description</p>
+        <a sec:authorize="hasRole('ADMIN')" class="book-edit-icon" th:href="|/edit/book?id=${book.id}|">
           <i class="fa-solid fa-pen-to-square"></i>
         </a>
       </button>
     </th:block>
-    <button sec:authorize="hasRole('ADMIN')" class="book-button book-edit-button" type="button"
-            th:onclick="location.href='/make/book'">
-      <i class="fa-solid fa-plus"></i>
-    </button>
   </div>
 </div>
 </html>

@@ -1,13 +1,11 @@
-@import "error.css";
 @import "menus.css";
 @import "plugins.css";
-@import "topbar.css";
 
 :root {
-    --default-foreground: #a1a1a1;
+    --default-foreground: #a5a5a5;
     --default-background: #0c0c0c;
     --highlight-foreground: #dcdcdc;
-    --highlight-background: #121212;
+    --highlight-background: #181818;
     --gold-accent: #ebca78; /* #e9c56d */
     --blue-accent: #83a2ec;
 
@@ -96,13 +94,14 @@ a {
 }
 
 a:not(.active):hover {
-    color: var(--gold-accent);
+    color: var(--blue-accent);
 }
 
 #welcome {
     font-family: mister-brown, sans-serif;
     font-size: 3rem;
     line-height: 1;
+    margin-top: 0;
 }
 
 button {
@@ -133,19 +132,24 @@ h1.header-right {
 
 main, article {
     width: var(--content-width);
-    margin: 0 auto 2rem;
+    margin: 0 auto;
+    padding: 0 0 2rem;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: var(--content-width);
+    padding: 2rem 0 0;
+    box-sizing: border-box;
+}
+
+main > .content {
+    flex: 1;
 }
 
 @media (max-width: 600px) {
-    .content-wrap {
-        padding: 0 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .chapters-shown .content-wrap {
-        margin-bottom: 0;
-    }
-
     .chapters-hidden main {
         max-height: calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-header-height));
         transition: max-height 0.3s;
@@ -155,9 +159,6 @@ main, article {
         max-height: calc(var(--vh, 1vh)*100 - var(--alt-chapter-menu-height));
         transition: max-height 0.3s;
     }
-}
-
-.content {
 }
 
 strong,
@@ -174,11 +175,11 @@ em,
 }
 
 .definition {
-    padding: .1rem .5rem 0;
+    padding: .1rem .4rem 0;
     margin-bottom: .5rem;
-    border-radius: .3rem;
-    border-left: .15rem solid var(--gold-accent);
-    transform: translateX(-.65rem);
+    border-left: .2rem solid var(--gold-accent);
+    border-radius: .2rem;
+    transform: translateX(-.6rem);
 }
 
 .definition strong {
@@ -403,35 +404,33 @@ td.code-caption {
 
 /* INPUT */
 
-.basic-input {
-    width: 100%;
+.basic-input, .password-input {
     padding: .4rem;
-    margin: 1rem 0;
     border: 0;
     border-radius: .5rem;
     box-sizing: border-box;
-    font-family: 'Chivo Mono', monospace;
+    font-family: 'interstate-mono', monospace;
     font-variant-ligatures: none;
     font-size: inherit;
     color: var(--highlight-foreground);
-    background-color: #2a2a2a;
+    background-color: var(--highlight-background);
+}
+
+.basic-input {
+    width: 100%;
 }
 
 .basic-input:focus {
     outline: none;
 }
 
+.spaced-input {
+    margin: .5rem 0;
+}
+
 .password-group {
     display: flex;
     justify-content: center;
-}
-
-.password-input {
-    padding: 6px;
-    border: 0;
-    font-size: 20px;
-    color: var(--highlight-foreground);
-    background-color: #333;
 }
 
 .password-input.error {
@@ -497,4 +496,32 @@ td.code-caption {
 
 .editing h2 {
     margin-top: .5rem;
+}
+
+/* HTML Errors: */
+
+.error-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+    width: 100vw;
+}
+
+.error-code {
+    font-family: 'Chivo Mono', monospace;
+    font-size: 8rem;
+    font-weight: 500;
+    line-height: 1;
+    margin: 0;
+}
+
+.error-name {
+    font-family: 'Chivo Mono', monospace;
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1;
+    margin: 0;
+    color: #f47174;
 }

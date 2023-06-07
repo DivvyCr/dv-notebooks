@@ -2,11 +2,11 @@
 <div layout:fragment="content"
      class="content">
   <form method="POST" th:object="${bookObj}">
-    <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem">
-      <input class="basic-input" type="text" value="*{code}" placeholder="Code" th:field="*{code}"/>
-      <input class="basic-input" type="text" value="*{title}" placeholder="Title" th:field="*{title}" autofocus/>
+    <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 1rem">
+      <input class="basic-input spaced-input" type="text" value="*{code}" placeholder="Code" th:field="*{code}"/>
+      <input class="basic-input spaced-input" type="text" value="*{title}" placeholder="Title" th:field="*{title}" autofocus/>
     </div>
-    <input class="basic-input" type="text" value="*{description}" placeholder="Description" th:field="*{description}"/>
+    <input class="basic-input spaced-input" type="text" value="*{description}" placeholder="Description" th:field="*{description}"/>
 
     <div class="edit-buttons-group">
       <button class="icon-button" type="submit">

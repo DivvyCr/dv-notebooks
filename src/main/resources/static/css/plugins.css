@@ -14,7 +14,7 @@
 /* EasyMDE: */
 
 #edit-title, .EasyMDEContainer, .CodeMirror {
-    font-family: 'Chivo Mono', monospace !important;
+    font-family: 'interstate-mono', monospace !important;
     font-variant-ligatures: none;
 }
 
