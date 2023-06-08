@@ -105,7 +105,7 @@ h1.header-left {
 h1.header-right {
     font-family: 'mister-brown', serif;
     font-size: 2.5rem;
-    line-height: 1;
+    line-height: 0.75;
 }
 
 main, article {
@@ -434,8 +434,8 @@ td.code-caption {
     color: var(--gold-accent);
 }
 
-.editing {
-    max-width: 60vw;
+#edit-title {
+    margin-top: .5rem;
 }
 
 /* HTML Errors: */

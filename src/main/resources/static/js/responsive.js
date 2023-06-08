@@ -13,9 +13,24 @@ function sidebarToggle() {
     html.classList.toggle('chapters-shown');
 }
 
-document.getElementById("toggle-chapter-navigation")
-    .addEventListener('click', sidebarToggle);
+const navBut = document.getElementById("toggle-chapter-navigation");
+if (navBut) navBut.addEventListener('click', sidebarToggle);
 
-const x = document.getElementById("chapter-navigation");
-window.onload = () => { x.style.left = "calc((100vw - var(--content-width)) / 2 - " + x.offsetWidth + "px)"};
-window.onresize = () => { x.style.left = "calc((100vw - var(--content-width)) / 2 - " + x.offsetWidth + "px)"};
+const navElt = document.getElementById("chapter-navigation");
+if (navElt) {
+    window.onload = () => { navElt.style.left = "calc((100vw - var(--content-width)) / 2 - " + navElt.offsetWidth + "px)"};
+    window.onresize = () => { navElt.style.left = "calc((100vw - var(--content-width)) / 2 - " + navElt.offsetWidth + "px)"};
+}
+
+// Enable KaTeX:
+document.addEventListener("DOMContentLoaded", function () {
+    var mathElems = document.getElementsByClassName("katex");
+    var elems = [];
+    for (const i in mathElems) {
+        if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+    }
+
+    elems.forEach(elem => {
+        katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+    });
+});

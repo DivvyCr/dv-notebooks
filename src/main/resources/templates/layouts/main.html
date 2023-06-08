@@ -4,12 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="https://use.typekit.net/khs4nhq.css">
-
   <title th:text="${pageTitle}">Crib Sheet</title>
   <link rel="stylesheet" href="/css/all.css">
-
-  <!-- Responsive UI for Phones -->
   <link rel="stylesheet" href="/css/responsive.css" media="(max-width: 600px)">
 
   <!-- FontAwesome -->
@@ -18,10 +14,9 @@
   <!-- Adobe Fonts -->
   <link rel="stylesheet" href="https://use.typekit.net/khs4nhq.css">
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js" integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
-          onload="renderMathInElement(document.body);"></script>
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="/css/katex.min.css">
+  <script defer src="/js/katex.min.js"></script>
 </head>
 <body>
 
@@ -52,24 +47,8 @@
   <div layout:fragment="content"></div>
 </article>
 
-<script>
-    (function () {
-        document.addEventListener("DOMContentLoaded", function () {
-            var mathElems = document.getElementsByClassName("katex");
-            var elems = [];
-            for (const i in mathElems) {
-                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
-            }
-
-            elems.forEach(elem => {
-                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
-            });
-        });
-    })();
-</script>
-<th:block layout:fragment="extra-scripts">
-  <script src="/js/responsive.js"></script>
-  <script src="/js/prism.js"></script>
-</th:block>
+<script src="/js/responsive.js"></script>
+<script src="/js/prism.js"></script>
+<th:block layout:fragment="extra-scripts"></th:block>
 </body>
 </html>

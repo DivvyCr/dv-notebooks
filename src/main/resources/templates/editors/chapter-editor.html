@@ -1,8 +1,4 @@
 <html layout:decorate="~{layouts/main.html}" lang="en">
-<th:block layout:fragment="extra-head">
-  <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-  <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
-</th:block>
 
 <div layout:fragment="chapter-options"
      class="move-buttons-group">
@@ -28,8 +24,7 @@
   </div>
 </div>
 
-<div layout:fragment="content"
-     class="content editing">
+<div layout:fragment="content" class="content">
   <form method="POST" th:object="${chapterObj}">
     <input id="edit-title" class="basic-input" type="text" th:field="*{title}" autofocus/>
     <textarea id="edit-content" type="text" rows="5" th:field="*{mdContent}" style="display: none"></textarea>
@@ -63,4 +58,5 @@
   <script src="/js/editing-preview.js"></script>
   <script src="/js/moving-chapters.js"></script>
 </th:block>
+
 </html>

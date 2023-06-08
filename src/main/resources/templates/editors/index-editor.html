@@ -1,14 +1,15 @@
 <html layout:decorate="~{layouts/base.html}" lang="en">
-<head>
-  <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-  <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
-</head>
 
 <div layout:fragment="content"
      class="content editing">
   <h1 id="welcome">Welcome!</h1>
   <form method="POST">
-    <textarea id="edit-content" name="new-content" type="text" rows="5" th:utext="${curContent}"></textarea>
+    <textarea id="edit-content" type="text" rows="5" th:utext="${curContent}" style="display: none"></textarea>
+
+    <div id="editor-with-preview">
+      <div id="editor" style="visibility: visible;"></div>
+      <div id="editor-preview" style="visibility: hidden;"></div>
+    </div>
 
     <div class="edit-buttons-group">
       <button class="icon-button" type="submit">
@@ -23,6 +24,8 @@
 </div>
 
 <th:block layout:fragment="extra-scripts">
-  <script src="/js/edit-md.js"></script>
+  <script src="/js/codemirror-editor.bundle.js"></script>
+  <script src="/js/editing-preview.js"></script>
 </th:block>
+
 </html>

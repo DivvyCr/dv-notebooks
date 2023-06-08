@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DefinitionBlockParser extends AbstractBlockParser {
-    final private static String DFN_FORMAT = "^(\\${2})\\s*$";
+    final private static String DFN_FORMAT = "^(&{2})\\s*$";
     final DefinitionBlock block = new DefinitionBlock();
     private boolean isBlockClosed = false;
 

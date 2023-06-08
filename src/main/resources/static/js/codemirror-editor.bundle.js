@@ -17362,6 +17362,13 @@
        }), { userEvent: "delete.dedent" }));
        return true;
    };
+   /**
+   A binding that binds Tab to [`indentMore`](https://codemirror.net/6/docs/ref/#commands.indentMore) and
+   Shift-Tab to [`indentLess`](https://codemirror.net/6/docs/ref/#commands.indentLess).
+   Please see the [Tab example](../../examples/tab/) before using
+   this.
+   */
+   const indentWithTab = { key: "Tab", run: indentMore, shift: indentLess };
 
    class CompositeBlock {
        constructor(type, 
@@ -31974,7 +31981,6 @@
    const latexHighlightParser = parser.configure({
        props: [
            styleTags({
-               Expr: tags$1.emphasis,
                Delimiter: tags$1.operator, // Parser Wrapper consumes delimiters from wrapped parser (ie. InlineLaTeX)?
                Special: tags$1.controlOperator,
                Any: tags$1.regexp
@@ -32053,7 +32059,7 @@
        parseInline: [{
            name: "CustomDefinitionParser",
            parse(cx, next, pos) {
-               if (next == 36 /* $ */ && cx.char(pos + 1) == 36 /* $ */) {
+               if (next == 38 /* & */ && cx.char(pos + 1) == 38 /* $ */) {
                    return cx.addElement(cx.elt("Definition", pos, pos + 2));
                }
                return -1;
@@ -32071,6 +32077,7 @@
            syncFormText,
            vim(),
            markdown({base: markdownLanguage, extensions: [BlockLaTeX, InlineLaTeX, CustomDefinition]}),
+           keymap.of([indentWithTab]), // By default, Tab is reserved for accessibile navigation.
        ]
    });
 

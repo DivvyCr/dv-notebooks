@@ -1,6 +1,6 @@
 import {EditorState, StateField} from "@codemirror/state"
-import {drawSelection, EditorView} from "@codemirror/view"
-import {history} from "@codemirror/commands"
+import {drawSelection, EditorView, keymap} from "@codemirror/view"
+import {history, indentWithTab} from "@codemirror/commands"
 import {syntaxHighlighting} from "@codemirror/language"
 import {styleTags, tagHighlighter, tags} from "@lezer/highlight"
 import {markdown, markdownLanguage} from "@codemirror/lang-markdown"
@@ -120,7 +120,7 @@ const CustomDefinition = {
     parseInline: [{
         name: "CustomDefinitionParser",
         parse(cx, next, pos) {
-            if (next == 36 /* $ */ && cx.char(pos + 1) == 36 /* $ */) {
+            if (next == 38 /* & */ && cx.char(pos + 1) == 38 /* $ */) {
                 return cx.addElement(cx.elt("Definition", pos, pos + 2));
             }
             return -1;
@@ -138,6 +138,7 @@ let startState = EditorState.create({
         syncFormText,
         vim(),
         markdown({base: markdownLanguage, extensions: [BlockLaTeX, InlineLaTeX, CustomDefinition]}),
+        keymap.of([indentWithTab]), // By default, Tab is reserved for accessibile navigation.
     ]
 });
 
