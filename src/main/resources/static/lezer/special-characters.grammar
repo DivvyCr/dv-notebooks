@@ -1,0 +1,15 @@
+// .\node_modules\.bin\lezer-generator .\src\main\resources\static\lezer\special-characters.grammar -o .\src\main\resources\static\lezer\special-characters-lang.js
+
+@top Program { text* }
+
+text {
+  Delimiter | Special | Any
+}
+
+// TODO: Differentiate between "\command{...}" and "\command\command" and "\command ..."
+
+@tokens {
+  Delimiter { "$`" | "`$" }
+  Special { "_" | "^" | "\\" | "{" | "}" | "~" | "&" }
+  Any { ![~$&\^_`{}\\]+ }
+}

@@ -1,0 +1,86 @@
+/* This is for the CodeMirror editor. */
+
+#editor-with-preview {
+    position: relative;
+    height: 50vh;
+    width: 100%;
+}
+
+#editor, #editor-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: .3rem;
+    background-color: var(--highlight-background);
+}
+
+#editor-preview {
+    overflow: scroll;
+}
+
+.cm-editor {
+    height: 50vh;
+}
+
+.cm-cursor {
+    border-left: .15rem solid var(--highlight-foreground) !important;
+}
+
+.cm-fat-cursor {
+    background: var(--highlight-foreground) !important;
+    color: var(--default-background) !important;
+    outline: none !important;
+}
+
+.cm-editor:not(.cm-focused) .cm-fat-cursor {
+    background: none !important;
+    color: inherit !important;
+    outline: solid 1px var(--highlight-foreground) !important;
+}
+
+/* mdHighlighter */
+
+.md-heading {
+    color: var(--highlight-foreground);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.md-bold {
+    color: var(--blue-accent);
+    font-weight: 600;
+}
+
+.md-italic {
+    color: var(--highlight-foreground);
+    font-weight: 600;
+}
+
+.md-html-tag,
+.md-html-tag-name,
+[class=md-meta], /* Select ONLY md-meta class; without more in-line classes. */
+.md-meta-label {
+    color: var(--highlight-foreground);
+    font-weight: 600;
+}
+
+.md-special {
+    color: var(--aside-tip-highlight);
+    font-weight: 600;
+}
+
+.md-math {
+    color: var(--aside-tip-highlight);
+}
+
+.md-math-delimiter {
+    color: var(--aside-tip-highlight);
+    font-weight: 600;
+}
+
+.md-math-special {
+    color: var(--error);
+    font-weight: 600;
+}
