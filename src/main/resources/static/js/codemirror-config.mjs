@@ -42,7 +42,6 @@ const mdHighlighter = tagHighlighter([
 const latexHighlightParser = specialCharacterParser.configure({
     props: [
         styleTags({
-            Expr: tags.emphasis,
             Delimiter: tags.operator, // Parser Wrapper consumes delimiters from wrapped parser (ie. InlineLaTeX)?
             Special: tags.controlOperator,
             Any: tags.regexp
