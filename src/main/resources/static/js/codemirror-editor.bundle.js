@@ -17593,6 +17593,7 @@
        return i;
    }
    function isFencedCode(line) {
+       return -1;
        if (line.next != 96 && line.next != 126 /* '`~' */)
            return -1;
        let pos = line.pos + 1;
@@ -31933,7 +31934,7 @@
      maxTerm: 7,
      skippedNodes: [0],
      repeatNodeCount: 1,
-     tokenData: "#]~R_Ot!Qtu!uu#O!Q#O#P#Q#P#Q!Q#Q#R#Q#R#S#Q#S#T#V#T#o!Q#o#p#Q#p#q!Q#q#r#Q#r;'S!Q;'S;=`!o<%lO!Q~!VWS~Ot!Qu#O!Q#P#Q!Q#T#o!Q#p#q!Q#r;'S!Q;'S;=`!o<%lO!Q~!rP;=`<%l!Q~!xP#S#T!{~#QOQ~~#VOR~~#YPtu!{",
+     tokenData: "#i~RbOt!Ztu#Ruv!Zvw#^w#O!Z#O#P#^#P#Q!Z#Q#R#^#R#S#^#S#T#c#T#o!Z#o#p#^#p#q!Z#q#r#^#r#s#^#s;'S!Z;'S;=`!{<%lO!Z~!`XS~Ot!Zuv!Zw#O!Z#P#Q!Z#T#o!Z#p#q!Z#s;'S!Z;'S;=`!{<%lO!Z~#OP;=`<%l!Z~#UP#S#T#X~#^OQ~~#cOR~~#fPtu#X",
      tokenizers: [0],
      topRules: {"Program":[0,1]},
      tokenPrec: 0
@@ -31966,9 +31967,8 @@
        {tag: tags$1.meta, class: "md-meta"},
        {tag: tags$1.labelName, class: "md-meta-label"},
        {tag: tags$1.regexp, class: "md-math"},
-       {tag: tags$1.operator, class: "md-math-delimiter"},
+       {tag: tags$1.operator, class: "md-special"},
        {tag: tags$1.controlOperator, class: "md-math-special"},
-       {tag: tags$1.annotation, class: "md-definition"},
    ]);
 
    const latexHighlightParser = parser.configure({
@@ -32013,10 +32013,42 @@
        })
    };
 
+   const BlockLaTeX = {
+       defineNodes: [{
+           name: "Latex",
+           style: tags$1.regexp
+       }, {
+           name: "LatexMark",
+           style: tags$1.operator
+       }],
+       parseBlock: [{
+           name: "LatexParser",
+           parse(cx, line) {
+               if (line.text.trim() == "```math") {
+                   cx.addElement(cx.elt("LatexMark", cx.parsedPos, cx.parsedPos + line.text.length));
+                   cx.nextLine();
+                   const startPos = cx.parsedPos;
+
+                   while (line.text.trim() != "```") cx.nextLine();
+                   if (line.text.trim() != "```") return false;
+
+                   cx.addElement(cx.elt("Latex", startPos, cx.parsedPos - 1));
+                   cx.addElement(cx.elt("LatexMark", cx.parsedPos, cx.parsedPos + line.text.length));
+                   return true;
+               }
+               return false;
+           }
+       }],
+       after: "FencedCode",
+       wrap: parseMixed(node => {
+           return node.name === "Latex" ? {parser: latexHighlightParser} : null
+       })
+   };
+
    const CustomDefinition = {
        defineNodes: [{
            name: "Definition",
-           style: tags$1.annotation
+           style: tags$1.operator
        }],
        parseInline: [{
            name: "CustomDefinitionParser",
@@ -32038,7 +32070,7 @@
            syntaxHighlighting(mdHighlighter),
            syncFormText,
            vim(),
-           markdown({base: markdownLanguage, extensions: [InlineLaTeX, CustomDefinition]}),
+           markdown({base: markdownLanguage, extensions: [BlockLaTeX, InlineLaTeX, CustomDefinition]}),
        ]
    });
 

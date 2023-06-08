@@ -35,9 +35,8 @@ const mdHighlighter = tagHighlighter([
     {tag: tags.meta, class: "md-meta"},
     {tag: tags.labelName, class: "md-meta-label"},
     {tag: tags.regexp, class: "md-math"},
-    {tag: tags.operator, class: "md-math-delimiter"},
+    {tag: tags.operator, class: "md-special"},
     {tag: tags.controlOperator, class: "md-math-special"},
-    {tag: tags.annotation, class: "md-definition"},
 ]);
 
 const latexHighlightParser = specialCharacterParser.configure({
@@ -82,10 +81,42 @@ const InlineLaTeX /* MarkdownConfig */ = {
     })
 };
 
+const BlockLaTeX = {
+    defineNodes: [{
+        name: "Latex",
+        style: tags.regexp
+    }, {
+        name: "LatexMark",
+        style: tags.operator
+    }],
+    parseBlock: [{
+        name: "LatexParser",
+        parse(cx, line) {
+            if (line.text.trim() == "```math") {
+                cx.addElement(cx.elt("LatexMark", cx.parsedPos, cx.parsedPos + line.text.length))
+                cx.nextLine();
+                const startPos = cx.parsedPos;
+
+                while (line.text.trim() != "```") cx.nextLine();
+                if (line.text.trim() != "```") return false;
+
+                cx.addElement(cx.elt("Latex", startPos, cx.parsedPos - 1));
+                cx.addElement(cx.elt("LatexMark", cx.parsedPos, cx.parsedPos + line.text.length))
+                return true;
+            }
+            return false;
+        }
+    }],
+    after: "FencedCode",
+    wrap: parseMixed(node => {
+        return node.name === "Latex" ? {parser: latexHighlightParser} : null
+    })
+}
+
 const CustomDefinition = {
     defineNodes: [{
         name: "Definition",
-        style: tags.annotation
+        style: tags.operator
     }],
     parseInline: [{
         name: "CustomDefinitionParser",
@@ -107,7 +138,7 @@ let startState = EditorState.create({
         syntaxHighlighting(mdHighlighter),
         syncFormText,
         vim(),
-        markdown({base: markdownLanguage, extensions: [InlineLaTeX, CustomDefinition]}),
+        markdown({base: markdownLanguage, extensions: [BlockLaTeX, InlineLaTeX, CustomDefinition]}),
     ]
 });
 
