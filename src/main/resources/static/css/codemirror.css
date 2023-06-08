@@ -66,11 +66,21 @@
     font-weight: 600;
 }
 
+.md-math {
+    color: var(--aside-tip-highlight);
+}
+
 .md-math-delimiter {
     color: var(--aside-tip-highlight);
     font-weight: 600;
 }
 
-.md-math {
-    color: var(--aside-tip-highlight);
+.md-math-special {
+    color: var(--error);
+    font-weight: 600;
+}
+
+.md-definition {
+    color: var(--gold-accent);
+    font-weight: 600;
 }
