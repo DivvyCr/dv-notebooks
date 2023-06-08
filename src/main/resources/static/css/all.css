@@ -438,14 +438,6 @@ td.code-caption {
     max-width: 60vw;
 }
 
-.editing h1:not(.index-placeholder) {
-    margin-top: .5rem;
-}
-
-.editing h2 {
-    margin-top: .5rem;
-}
-
 /* HTML Errors: */
 
 .error-group {

@@ -25,7 +25,7 @@
     border-left: .2rem solid var(--highlight-background);
     border-right: .2rem solid var(--highlight-background);
     border-radius: .5rem;
-    background: linear-gradient(160deg, var(--highlight-background), transparent 25%);
+    background: linear-gradient(165deg, var(--highlight-background), transparent 40%);
     word-wrap: break-word;
     transition: border-color 0.2s;
 }
