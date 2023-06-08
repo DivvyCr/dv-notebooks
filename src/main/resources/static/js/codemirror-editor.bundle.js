@@ -17363,921 +17363,6 @@
        return true;
    };
 
-   const basicNormalize = typeof String.prototype.normalize == "function"
-       ? x => x.normalize("NFKD") : x => x;
-   /**
-   A search cursor provides an iterator over text matches in a
-   document.
-   */
-   class SearchCursor {
-       /**
-       Create a text cursor. The query is the search string, `from` to
-       `to` provides the region to search.
-       
-       When `normalize` is given, it will be called, on both the query
-       string and the content it is matched against, before comparing.
-       You can, for example, create a case-insensitive search by
-       passing `s => s.toLowerCase()`.
-       
-       Text is always normalized with
-       [`.normalize("NFKD")`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize)
-       (when supported).
-       */
-       constructor(text, query, from = 0, to = text.length, normalize, test) {
-           this.test = test;
-           /**
-           The current match (only holds a meaningful value after
-           [`next`](https://codemirror.net/6/docs/ref/#search.SearchCursor.next) has been called and when
-           `done` is false).
-           */
-           this.value = { from: 0, to: 0 };
-           /**
-           Whether the end of the iterated region has been reached.
-           */
-           this.done = false;
-           this.matches = [];
-           this.buffer = "";
-           this.bufferPos = 0;
-           this.iter = text.iterRange(from, to);
-           this.bufferStart = from;
-           this.normalize = normalize ? x => normalize(basicNormalize(x)) : basicNormalize;
-           this.query = this.normalize(query);
-       }
-       peek() {
-           if (this.bufferPos == this.buffer.length) {
-               this.bufferStart += this.buffer.length;
-               this.iter.next();
-               if (this.iter.done)
-                   return -1;
-               this.bufferPos = 0;
-               this.buffer = this.iter.value;
-           }
-           return codePointAt(this.buffer, this.bufferPos);
-       }
-       /**
-       Look for the next match. Updates the iterator's
-       [`value`](https://codemirror.net/6/docs/ref/#search.SearchCursor.value) and
-       [`done`](https://codemirror.net/6/docs/ref/#search.SearchCursor.done) properties. Should be called
-       at least once before using the cursor.
-       */
-       next() {
-           while (this.matches.length)
-               this.matches.pop();
-           return this.nextOverlapping();
-       }
-       /**
-       The `next` method will ignore matches that partially overlap a
-       previous match. This method behaves like `next`, but includes
-       such matches.
-       */
-       nextOverlapping() {
-           for (;;) {
-               let next = this.peek();
-               if (next < 0) {
-                   this.done = true;
-                   return this;
-               }
-               let str = fromCodePoint(next), start = this.bufferStart + this.bufferPos;
-               this.bufferPos += codePointSize(next);
-               let norm = this.normalize(str);
-               for (let i = 0, pos = start;; i++) {
-                   let code = norm.charCodeAt(i);
-                   let match = this.match(code, pos);
-                   if (match) {
-                       this.value = match;
-                       return this;
-                   }
-                   if (i == norm.length - 1)
-                       break;
-                   if (pos == start && i < str.length && str.charCodeAt(i) == code)
-                       pos++;
-               }
-           }
-       }
-       match(code, pos) {
-           let match = null;
-           for (let i = 0; i < this.matches.length; i += 2) {
-               let index = this.matches[i], keep = false;
-               if (this.query.charCodeAt(index) == code) {
-                   if (index == this.query.length - 1) {
-                       match = { from: this.matches[i + 1], to: pos + 1 };
-                   }
-                   else {
-                       this.matches[i]++;
-                       keep = true;
-                   }
-               }
-               if (!keep) {
-                   this.matches.splice(i, 2);
-                   i -= 2;
-               }
-           }
-           if (this.query.charCodeAt(0) == code) {
-               if (this.query.length == 1)
-                   match = { from: pos, to: pos + 1 };
-               else
-                   this.matches.push(1, pos);
-           }
-           if (match && this.test && !this.test(match.from, match.to, this.buffer, this.bufferPos))
-               match = null;
-           return match;
-       }
-   }
-   if (typeof Symbol != "undefined")
-       SearchCursor.prototype[Symbol.iterator] = function () { return this; };
-
-   const empty = { from: -1, to: -1, match: /*@__PURE__*//.*/.exec("") };
-   const baseFlags = "gm" + (/x/.unicode == null ? "" : "u");
-   /**
-   This class is similar to [`SearchCursor`](https://codemirror.net/6/docs/ref/#search.SearchCursor)
-   but searches for a regular expression pattern instead of a plain
-   string.
-   */
-   class RegExpCursor {
-       /**
-       Create a cursor that will search the given range in the given
-       document. `query` should be the raw pattern (as you'd pass it to
-       `new RegExp`).
-       */
-       constructor(text, query, options, from = 0, to = text.length) {
-           this.text = text;
-           this.to = to;
-           this.curLine = "";
-           /**
-           Set to `true` when the cursor has reached the end of the search
-           range.
-           */
-           this.done = false;
-           /**
-           Will contain an object with the extent of the match and the
-           match object when [`next`](https://codemirror.net/6/docs/ref/#search.RegExpCursor.next)
-           sucessfully finds a match.
-           */
-           this.value = empty;
-           if (/\\[sWDnr]|\n|\r|\[\^/.test(query))
-               return new MultilineRegExpCursor(text, query, options, from, to);
-           this.re = new RegExp(query, baseFlags + ((options === null || options === void 0 ? void 0 : options.ignoreCase) ? "i" : ""));
-           this.test = options === null || options === void 0 ? void 0 : options.test;
-           this.iter = text.iter();
-           let startLine = text.lineAt(from);
-           this.curLineStart = startLine.from;
-           this.matchPos = toCharEnd(text, from);
-           this.getLine(this.curLineStart);
-       }
-       getLine(skip) {
-           this.iter.next(skip);
-           if (this.iter.lineBreak) {
-               this.curLine = "";
-           }
-           else {
-               this.curLine = this.iter.value;
-               if (this.curLineStart + this.curLine.length > this.to)
-                   this.curLine = this.curLine.slice(0, this.to - this.curLineStart);
-               this.iter.next();
-           }
-       }
-       nextLine() {
-           this.curLineStart = this.curLineStart + this.curLine.length + 1;
-           if (this.curLineStart > this.to)
-               this.curLine = "";
-           else
-               this.getLine(0);
-       }
-       /**
-       Move to the next match, if there is one.
-       */
-       next() {
-           for (let off = this.matchPos - this.curLineStart;;) {
-               this.re.lastIndex = off;
-               let match = this.matchPos <= this.to && this.re.exec(this.curLine);
-               if (match) {
-                   let from = this.curLineStart + match.index, to = from + match[0].length;
-                   this.matchPos = toCharEnd(this.text, to + (from == to ? 1 : 0));
-                   if (from == this.curLineStart + this.curLine.length)
-                       this.nextLine();
-                   if ((from < to || from > this.value.to) && (!this.test || this.test(from, to, match))) {
-                       this.value = { from, to, match };
-                       return this;
-                   }
-                   off = this.matchPos - this.curLineStart;
-               }
-               else if (this.curLineStart + this.curLine.length < this.to) {
-                   this.nextLine();
-                   off = 0;
-               }
-               else {
-                   this.done = true;
-                   return this;
-               }
-           }
-       }
-   }
-   const flattened = /*@__PURE__*/new WeakMap();
-   // Reusable (partially) flattened document strings
-   class FlattenedDoc {
-       constructor(from, text) {
-           this.from = from;
-           this.text = text;
-       }
-       get to() { return this.from + this.text.length; }
-       static get(doc, from, to) {
-           let cached = flattened.get(doc);
-           if (!cached || cached.from >= to || cached.to <= from) {
-               let flat = new FlattenedDoc(from, doc.sliceString(from, to));
-               flattened.set(doc, flat);
-               return flat;
-           }
-           if (cached.from == from && cached.to == to)
-               return cached;
-           let { text, from: cachedFrom } = cached;
-           if (cachedFrom > from) {
-               text = doc.sliceString(from, cachedFrom) + text;
-               cachedFrom = from;
-           }
-           if (cached.to < to)
-               text += doc.sliceString(cached.to, to);
-           flattened.set(doc, new FlattenedDoc(cachedFrom, text));
-           return new FlattenedDoc(from, text.slice(from - cachedFrom, to - cachedFrom));
-       }
-   }
-   class MultilineRegExpCursor {
-       constructor(text, query, options, from, to) {
-           this.text = text;
-           this.to = to;
-           this.done = false;
-           this.value = empty;
-           this.matchPos = toCharEnd(text, from);
-           this.re = new RegExp(query, baseFlags + ((options === null || options === void 0 ? void 0 : options.ignoreCase) ? "i" : ""));
-           this.test = options === null || options === void 0 ? void 0 : options.test;
-           this.flat = FlattenedDoc.get(text, from, this.chunkEnd(from + 5000 /* Base */));
-       }
-       chunkEnd(pos) {
-           return pos >= this.to ? this.to : this.text.lineAt(pos).to;
-       }
-       next() {
-           for (;;) {
-               let off = this.re.lastIndex = this.matchPos - this.flat.from;
-               let match = this.re.exec(this.flat.text);
-               // Skip empty matches directly after the last match
-               if (match && !match[0] && match.index == off) {
-                   this.re.lastIndex = off + 1;
-                   match = this.re.exec(this.flat.text);
-               }
-               if (match) {
-                   let from = this.flat.from + match.index, to = from + match[0].length;
-                   // If a match goes almost to the end of a noncomplete chunk, try
-                   // again, since it'll likely be able to match more
-                   if ((this.flat.to >= this.to || match.index + match[0].length <= this.flat.text.length - 10) &&
-                       (!this.test || this.test(from, to, match))) {
-                       this.value = { from, to, match };
-                       this.matchPos = toCharEnd(this.text, to + (from == to ? 1 : 0));
-                       return this;
-                   }
-               }
-               if (this.flat.to == this.to) {
-                   this.done = true;
-                   return this;
-               }
-               // Grow the flattened doc
-               this.flat = FlattenedDoc.get(this.text, this.flat.from, this.chunkEnd(this.flat.from + this.flat.text.length * 2));
-           }
-       }
-   }
-   if (typeof Symbol != "undefined") {
-       RegExpCursor.prototype[Symbol.iterator] = MultilineRegExpCursor.prototype[Symbol.iterator] =
-           function () { return this; };
-   }
-   function validRegExp(source) {
-       try {
-           new RegExp(source, baseFlags);
-           return true;
-       }
-       catch (_a) {
-           return false;
-       }
-   }
-   function toCharEnd(text, pos) {
-       if (pos >= text.length)
-           return pos;
-       let line = text.lineAt(pos), next;
-       while (pos < line.to && (next = line.text.charCodeAt(pos - line.from)) >= 0xDC00 && next < 0xE000)
-           pos++;
-       return pos;
-   }
-   /**
-   A search query. Part of the editor's search state.
-   */
-   class SearchQuery {
-       /**
-       Create a query object.
-       */
-       constructor(config) {
-           this.search = config.search;
-           this.caseSensitive = !!config.caseSensitive;
-           this.literal = !!config.literal;
-           this.regexp = !!config.regexp;
-           this.replace = config.replace || "";
-           this.valid = !!this.search && (!this.regexp || validRegExp(this.search));
-           this.unquoted = this.unquote(this.search);
-           this.wholeWord = !!config.wholeWord;
-       }
-       /**
-       @internal
-       */
-       unquote(text) {
-           return this.literal ? text :
-               text.replace(/\\([nrt\\])/g, (_, ch) => ch == "n" ? "\n" : ch == "r" ? "\r" : ch == "t" ? "\t" : "\\");
-       }
-       /**
-       Compare this query to another query.
-       */
-       eq(other) {
-           return this.search == other.search && this.replace == other.replace &&
-               this.caseSensitive == other.caseSensitive && this.regexp == other.regexp &&
-               this.wholeWord == other.wholeWord;
-       }
-       /**
-       @internal
-       */
-       create() {
-           return this.regexp ? new RegExpQuery(this) : new StringQuery(this);
-       }
-       /**
-       Get a search cursor for this query, searching through the given
-       range in the given state.
-       */
-       getCursor(state, from = 0, to) {
-           let st = state.doc ? state : EditorState.create({ doc: state });
-           if (to == null)
-               to = st.doc.length;
-           return this.regexp ? regexpCursor(this, st, from, to) : stringCursor(this, st, from, to);
-       }
-   }
-   class QueryType {
-       constructor(spec) {
-           this.spec = spec;
-       }
-   }
-   function stringCursor(spec, state, from, to) {
-       return new SearchCursor(state.doc, spec.unquoted, from, to, spec.caseSensitive ? undefined : x => x.toLowerCase(), spec.wholeWord ? stringWordTest(state.doc, state.charCategorizer(state.selection.main.head)) : undefined);
-   }
-   function stringWordTest(doc, categorizer) {
-       return (from, to, buf, bufPos) => {
-           if (bufPos > from || bufPos + buf.length < to) {
-               bufPos = Math.max(0, from - 2);
-               buf = doc.sliceString(bufPos, Math.min(doc.length, to + 2));
-           }
-           return (categorizer(charBefore(buf, from - bufPos)) != CharCategory.Word ||
-               categorizer(charAfter(buf, from - bufPos)) != CharCategory.Word) &&
-               (categorizer(charAfter(buf, to - bufPos)) != CharCategory.Word ||
-                   categorizer(charBefore(buf, to - bufPos)) != CharCategory.Word);
-       };
-   }
-   class StringQuery extends QueryType {
-       constructor(spec) {
-           super(spec);
-       }
-       nextMatch(state, curFrom, curTo) {
-           let cursor = stringCursor(this.spec, state, curTo, state.doc.length).nextOverlapping();
-           if (cursor.done)
-               cursor = stringCursor(this.spec, state, 0, curFrom).nextOverlapping();
-           return cursor.done ? null : cursor.value;
-       }
-       // Searching in reverse is, rather than implementing an inverted search
-       // cursor, done by scanning chunk after chunk forward.
-       prevMatchInRange(state, from, to) {
-           for (let pos = to;;) {
-               let start = Math.max(from, pos - 10000 /* ChunkSize */ - this.spec.unquoted.length);
-               let cursor = stringCursor(this.spec, state, start, pos), range = null;
-               while (!cursor.nextOverlapping().done)
-                   range = cursor.value;
-               if (range)
-                   return range;
-               if (start == from)
-                   return null;
-               pos -= 10000 /* ChunkSize */;
-           }
-       }
-       prevMatch(state, curFrom, curTo) {
-           return this.prevMatchInRange(state, 0, curFrom) ||
-               this.prevMatchInRange(state, curTo, state.doc.length);
-       }
-       getReplacement(_result) { return this.spec.unquote(this.spec.replace); }
-       matchAll(state, limit) {
-           let cursor = stringCursor(this.spec, state, 0, state.doc.length), ranges = [];
-           while (!cursor.next().done) {
-               if (ranges.length >= limit)
-                   return null;
-               ranges.push(cursor.value);
-           }
-           return ranges;
-       }
-       highlight(state, from, to, add) {
-           let cursor = stringCursor(this.spec, state, Math.max(0, from - this.spec.unquoted.length), Math.min(to + this.spec.unquoted.length, state.doc.length));
-           while (!cursor.next().done)
-               add(cursor.value.from, cursor.value.to);
-       }
-   }
-   function regexpCursor(spec, state, from, to) {
-       return new RegExpCursor(state.doc, spec.search, {
-           ignoreCase: !spec.caseSensitive,
-           test: spec.wholeWord ? regexpWordTest(state.charCategorizer(state.selection.main.head)) : undefined
-       }, from, to);
-   }
-   function charBefore(str, index) {
-       return str.slice(findClusterBreak(str, index, false), index);
-   }
-   function charAfter(str, index) {
-       return str.slice(index, findClusterBreak(str, index));
-   }
-   function regexpWordTest(categorizer) {
-       return (_from, _to, match) => !match[0].length ||
-           (categorizer(charBefore(match.input, match.index)) != CharCategory.Word ||
-               categorizer(charAfter(match.input, match.index)) != CharCategory.Word) &&
-               (categorizer(charAfter(match.input, match.index + match[0].length)) != CharCategory.Word ||
-                   categorizer(charBefore(match.input, match.index + match[0].length)) != CharCategory.Word);
-   }
-   class RegExpQuery extends QueryType {
-       nextMatch(state, curFrom, curTo) {
-           let cursor = regexpCursor(this.spec, state, curTo, state.doc.length).next();
-           if (cursor.done)
-               cursor = regexpCursor(this.spec, state, 0, curFrom).next();
-           return cursor.done ? null : cursor.value;
-       }
-       prevMatchInRange(state, from, to) {
-           for (let size = 1;; size++) {
-               let start = Math.max(from, to - size * 10000 /* ChunkSize */);
-               let cursor = regexpCursor(this.spec, state, start, to), range = null;
-               while (!cursor.next().done)
-                   range = cursor.value;
-               if (range && (start == from || range.from > start + 10))
-                   return range;
-               if (start == from)
-                   return null;
-           }
-       }
-       prevMatch(state, curFrom, curTo) {
-           return this.prevMatchInRange(state, 0, curFrom) ||
-               this.prevMatchInRange(state, curTo, state.doc.length);
-       }
-       getReplacement(result) {
-           return this.spec.unquote(this.spec.replace.replace(/\$([$&\d+])/g, (m, i) => i == "$" ? "$"
-               : i == "&" ? result.match[0]
-                   : i != "0" && +i < result.match.length ? result.match[i]
-                       : m));
-       }
-       matchAll(state, limit) {
-           let cursor = regexpCursor(this.spec, state, 0, state.doc.length), ranges = [];
-           while (!cursor.next().done) {
-               if (ranges.length >= limit)
-                   return null;
-               ranges.push(cursor.value);
-           }
-           return ranges;
-       }
-       highlight(state, from, to, add) {
-           let cursor = regexpCursor(this.spec, state, Math.max(0, from - 250 /* HighlightMargin */), Math.min(to + 250 /* HighlightMargin */, state.doc.length));
-           while (!cursor.next().done)
-               add(cursor.value.from, cursor.value.to);
-       }
-   }
-   /**
-   A state effect that updates the current search query. Note that
-   this only has an effect if the search state has been initialized
-   (by including [`search`](https://codemirror.net/6/docs/ref/#search.search) in your configuration or
-   by running [`openSearchPanel`](https://codemirror.net/6/docs/ref/#search.openSearchPanel) at least
-   once).
-   */
-   const setSearchQuery = /*@__PURE__*/StateEffect.define();
-
-   function toSet(chars) {
-       let flat = Object.keys(chars).join("");
-       let words = /\w/.test(flat);
-       if (words)
-           flat = flat.replace(/\w/g, "");
-       return `[${words ? "\\w" : ""}${flat.replace(/[^\w\s]/g, "\\$&")}]`;
-   }
-   function prefixMatch(options) {
-       let first = Object.create(null), rest = Object.create(null);
-       for (let { label } of options) {
-           first[label[0]] = true;
-           for (let i = 1; i < label.length; i++)
-               rest[label[i]] = true;
-       }
-       let source = toSet(first) + toSet(rest) + "*$";
-       return [new RegExp("^" + source), new RegExp(source)];
-   }
-   /**
-   Given a a fixed array of options, return an autocompleter that
-   completes them.
-   */
-   function completeFromList(list) {
-       let options = list.map(o => typeof o == "string" ? { label: o } : o);
-       let [validFor, match] = options.every(o => /^\w+$/.test(o.label)) ? [/\w*$/, /\w+$/] : prefixMatch(options);
-       return (context) => {
-           let token = context.matchBefore(match);
-           return token || context.explicit ? { from: token ? token.from : context.pos, options, validFor } : null;
-       };
-   }
-   /**
-   Wrap the given completion source so that it will not fire when the
-   cursor is in a syntax node with one of the given names.
-   */
-   function ifNotIn(nodes, source) {
-       return (context) => {
-           for (let pos = syntaxTree(context.state).resolveInner(context.pos, -1); pos; pos = pos.parent) {
-               if (nodes.indexOf(pos.name) > -1)
-                   return null;
-               if (pos.type.isTop)
-                   break;
-           }
-           return source(context);
-       };
-   }
-   /**
-   This annotation is added to transactions that are produced by
-   picking a completion.
-   */
-   const pickedCompletion = /*@__PURE__*/Annotation.define();
-
-   const baseTheme = /*@__PURE__*/EditorView.baseTheme({
-       ".cm-tooltip.cm-tooltip-autocomplete": {
-           "& > ul": {
-               fontFamily: "monospace",
-               whiteSpace: "nowrap",
-               overflow: "hidden auto",
-               maxWidth_fallback: "700px",
-               maxWidth: "min(700px, 95vw)",
-               minWidth: "250px",
-               maxHeight: "10em",
-               height: "100%",
-               listStyle: "none",
-               margin: 0,
-               padding: 0,
-               "& > li, & > completion-section": {
-                   padding: "1px 3px",
-                   lineHeight: 1.2
-               },
-               "& > li": {
-                   overflowX: "hidden",
-                   textOverflow: "ellipsis",
-                   cursor: "pointer"
-               },
-               "& > completion-section": {
-                   display: "list-item",
-                   borderBottom: "1px solid silver",
-                   paddingLeft: "0.5em",
-                   opacity: 0.7
-               }
-           }
-       },
-       "&light .cm-tooltip-autocomplete ul li[aria-selected]": {
-           background: "#17c",
-           color: "white",
-       },
-       "&light .cm-tooltip-autocomplete-disabled ul li[aria-selected]": {
-           background: "#777",
-       },
-       "&dark .cm-tooltip-autocomplete ul li[aria-selected]": {
-           background: "#347",
-           color: "white",
-       },
-       "&dark .cm-tooltip-autocomplete-disabled ul li[aria-selected]": {
-           background: "#444",
-       },
-       ".cm-completionListIncompleteTop:before, .cm-completionListIncompleteBottom:after": {
-           content: '"···"',
-           opacity: 0.5,
-           display: "block",
-           textAlign: "center"
-       },
-       ".cm-tooltip.cm-completionInfo": {
-           position: "absolute",
-           padding: "3px 9px",
-           width: "max-content",
-           maxWidth: `${400 /* Info.Width */}px`,
-           boxSizing: "border-box"
-       },
-       ".cm-completionInfo.cm-completionInfo-left": { right: "100%" },
-       ".cm-completionInfo.cm-completionInfo-right": { left: "100%" },
-       ".cm-completionInfo.cm-completionInfo-left-narrow": { right: `${30 /* Info.Margin */}px` },
-       ".cm-completionInfo.cm-completionInfo-right-narrow": { left: `${30 /* Info.Margin */}px` },
-       "&light .cm-snippetField": { backgroundColor: "#00000022" },
-       "&dark .cm-snippetField": { backgroundColor: "#ffffff22" },
-       ".cm-snippetFieldPosition": {
-           verticalAlign: "text-top",
-           width: 0,
-           height: "1.15em",
-           display: "inline-block",
-           margin: "0 -0.7px -.7em",
-           borderLeft: "1.4px dotted #888"
-       },
-       ".cm-completionMatchedText": {
-           textDecoration: "underline"
-       },
-       ".cm-completionDetail": {
-           marginLeft: "0.5em",
-           fontStyle: "italic"
-       },
-       ".cm-completionIcon": {
-           fontSize: "90%",
-           width: ".8em",
-           display: "inline-block",
-           textAlign: "center",
-           paddingRight: ".6em",
-           opacity: "0.6",
-           boxSizing: "content-box"
-       },
-       ".cm-completionIcon-function, .cm-completionIcon-method": {
-           "&:after": { content: "'ƒ'" }
-       },
-       ".cm-completionIcon-class": {
-           "&:after": { content: "'○'" }
-       },
-       ".cm-completionIcon-interface": {
-           "&:after": { content: "'◌'" }
-       },
-       ".cm-completionIcon-variable": {
-           "&:after": { content: "'𝑥'" }
-       },
-       ".cm-completionIcon-constant": {
-           "&:after": { content: "'𝐶'" }
-       },
-       ".cm-completionIcon-type": {
-           "&:after": { content: "'𝑡'" }
-       },
-       ".cm-completionIcon-enum": {
-           "&:after": { content: "'∪'" }
-       },
-       ".cm-completionIcon-property": {
-           "&:after": { content: "'□'" }
-       },
-       ".cm-completionIcon-keyword": {
-           "&:after": { content: "'🔑\uFE0E'" } // Disable emoji rendering
-       },
-       ".cm-completionIcon-namespace": {
-           "&:after": { content: "'▢'" }
-       },
-       ".cm-completionIcon-text": {
-           "&:after": { content: "'abc'", fontSize: "50%", verticalAlign: "middle" }
-       }
-   });
-
-   class FieldPos {
-       constructor(field, line, from, to) {
-           this.field = field;
-           this.line = line;
-           this.from = from;
-           this.to = to;
-       }
-   }
-   class FieldRange {
-       constructor(field, from, to) {
-           this.field = field;
-           this.from = from;
-           this.to = to;
-       }
-       map(changes) {
-           let from = changes.mapPos(this.from, -1, MapMode.TrackDel);
-           let to = changes.mapPos(this.to, 1, MapMode.TrackDel);
-           return from == null || to == null ? null : new FieldRange(this.field, from, to);
-       }
-   }
-   class Snippet {
-       constructor(lines, fieldPositions) {
-           this.lines = lines;
-           this.fieldPositions = fieldPositions;
-       }
-       instantiate(state, pos) {
-           let text = [], lineStart = [pos];
-           let lineObj = state.doc.lineAt(pos), baseIndent = /^\s*/.exec(lineObj.text)[0];
-           for (let line of this.lines) {
-               if (text.length) {
-                   let indent = baseIndent, tabs = /^\t*/.exec(line)[0].length;
-                   for (let i = 0; i < tabs; i++)
-                       indent += state.facet(indentUnit);
-                   lineStart.push(pos + indent.length - tabs);
-                   line = indent + line.slice(tabs);
-               }
-               text.push(line);
-               pos += line.length + 1;
-           }
-           let ranges = this.fieldPositions.map(pos => new FieldRange(pos.field, lineStart[pos.line] + pos.from, lineStart[pos.line] + pos.to));
-           return { text, ranges };
-       }
-       static parse(template) {
-           let fields = [];
-           let lines = [], positions = [], m;
-           for (let line of template.split(/\r\n?|\n/)) {
-               while (m = /[#$]\{(?:(\d+)(?::([^}]*))?|([^}]*))\}/.exec(line)) {
-                   let seq = m[1] ? +m[1] : null, name = m[2] || m[3] || "", found = -1;
-                   for (let i = 0; i < fields.length; i++) {
-                       if (seq != null ? fields[i].seq == seq : name ? fields[i].name == name : false)
-                           found = i;
-                   }
-                   if (found < 0) {
-                       let i = 0;
-                       while (i < fields.length && (seq == null || (fields[i].seq != null && fields[i].seq < seq)))
-                           i++;
-                       fields.splice(i, 0, { seq, name });
-                       found = i;
-                       for (let pos of positions)
-                           if (pos.field >= found)
-                               pos.field++;
-                   }
-                   positions.push(new FieldPos(found, lines.length, m.index, m.index + name.length));
-                   line = line.slice(0, m.index) + name + line.slice(m.index + m[0].length);
-               }
-               for (let esc; esc = /\\([{}])/.exec(line);) {
-                   line = line.slice(0, esc.index) + esc[1] + line.slice(esc.index + esc[0].length);
-                   for (let pos of positions)
-                       if (pos.line == lines.length && pos.from > esc.index) {
-                           pos.from--;
-                           pos.to--;
-                       }
-               }
-               lines.push(line);
-           }
-           return new Snippet(lines, positions);
-       }
-   }
-   let fieldMarker = /*@__PURE__*/Decoration.widget({ widget: /*@__PURE__*/new class extends WidgetType {
-           toDOM() {
-               let span = document.createElement("span");
-               span.className = "cm-snippetFieldPosition";
-               return span;
-           }
-           ignoreEvent() { return false; }
-       } });
-   let fieldRange = /*@__PURE__*/Decoration.mark({ class: "cm-snippetField" });
-   class ActiveSnippet {
-       constructor(ranges, active) {
-           this.ranges = ranges;
-           this.active = active;
-           this.deco = Decoration.set(ranges.map(r => (r.from == r.to ? fieldMarker : fieldRange).range(r.from, r.to)));
-       }
-       map(changes) {
-           let ranges = [];
-           for (let r of this.ranges) {
-               let mapped = r.map(changes);
-               if (!mapped)
-                   return null;
-               ranges.push(mapped);
-           }
-           return new ActiveSnippet(ranges, this.active);
-       }
-       selectionInsideField(sel) {
-           return sel.ranges.every(range => this.ranges.some(r => r.field == this.active && r.from <= range.from && r.to >= range.to));
-       }
-   }
-   const setActive = /*@__PURE__*/StateEffect.define({
-       map(value, changes) { return value && value.map(changes); }
-   });
-   const moveToField = /*@__PURE__*/StateEffect.define();
-   const snippetState = /*@__PURE__*/StateField.define({
-       create() { return null; },
-       update(value, tr) {
-           for (let effect of tr.effects) {
-               if (effect.is(setActive))
-                   return effect.value;
-               if (effect.is(moveToField) && value)
-                   return new ActiveSnippet(value.ranges, effect.value);
-           }
-           if (value && tr.docChanged)
-               value = value.map(tr.changes);
-           if (value && tr.selection && !value.selectionInsideField(tr.selection))
-               value = null;
-           return value;
-       },
-       provide: f => EditorView.decorations.from(f, val => val ? val.deco : Decoration.none)
-   });
-   function fieldSelection(ranges, field) {
-       return EditorSelection.create(ranges.filter(r => r.field == field).map(r => EditorSelection.range(r.from, r.to)));
-   }
-   /**
-   Convert a snippet template to a function that can
-   [apply](https://codemirror.net/6/docs/ref/#autocomplete.Completion.apply) it. Snippets are written
-   using syntax like this:
-
-       "for (let ${index} = 0; ${index} < ${end}; ${index}++) {\n\t${}\n}"
-
-   Each `${}` placeholder (you may also use `#{}`) indicates a field
-   that the user can fill in. Its name, if any, will be the default
-   content for the field.
-
-   When the snippet is activated by calling the returned function,
-   the code is inserted at the given position. Newlines in the
-   template are indented by the indentation of the start line, plus
-   one [indent unit](https://codemirror.net/6/docs/ref/#language.indentUnit) per tab character after
-   the newline.
-
-   On activation, (all instances of) the first field are selected.
-   The user can move between fields with Tab and Shift-Tab as long as
-   the fields are active. Moving to the last field or moving the
-   cursor out of the current field deactivates the fields.
-
-   The order of fields defaults to textual order, but you can add
-   numbers to placeholders (`${1}` or `${1:defaultText}`) to provide
-   a custom order.
-
-   To include a literal `{` or `}` in your template, put a backslash
-   in front of it. This will be removed and the brace will not be
-   interpreted as indicating a placeholder.
-   */
-   function snippet(template) {
-       let snippet = Snippet.parse(template);
-       return (editor, completion, from, to) => {
-           let { text, ranges } = snippet.instantiate(editor.state, from);
-           let spec = {
-               changes: { from, to, insert: Text.of(text) },
-               scrollIntoView: true,
-               annotations: completion ? pickedCompletion.of(completion) : undefined
-           };
-           if (ranges.length)
-               spec.selection = fieldSelection(ranges, 0);
-           if (ranges.length > 1) {
-               let active = new ActiveSnippet(ranges, 0);
-               let effects = spec.effects = [setActive.of(active)];
-               if (editor.state.field(snippetState, false) === undefined)
-                   effects.push(StateEffect.appendConfig.of([snippetState, addSnippetKeymap, snippetPointerHandler, baseTheme]));
-           }
-           editor.dispatch(editor.state.update(spec));
-       };
-   }
-   function moveField(dir) {
-       return ({ state, dispatch }) => {
-           let active = state.field(snippetState, false);
-           if (!active || dir < 0 && active.active == 0)
-               return false;
-           let next = active.active + dir, last = dir > 0 && !active.ranges.some(r => r.field == next + dir);
-           dispatch(state.update({
-               selection: fieldSelection(active.ranges, next),
-               effects: setActive.of(last ? null : new ActiveSnippet(active.ranges, next))
-           }));
-           return true;
-       };
-   }
-   /**
-   A command that clears the active snippet, if any.
-   */
-   const clearSnippet = ({ state, dispatch }) => {
-       let active = state.field(snippetState, false);
-       if (!active)
-           return false;
-       dispatch(state.update({ effects: setActive.of(null) }));
-       return true;
-   };
-   /**
-   Move to the next snippet field, if available.
-   */
-   const nextSnippetField = /*@__PURE__*/moveField(1);
-   /**
-   Move to the previous snippet field, if available.
-   */
-   const prevSnippetField = /*@__PURE__*/moveField(-1);
-   const defaultSnippetKeymap = [
-       { key: "Tab", run: nextSnippetField, shift: prevSnippetField },
-       { key: "Escape", run: clearSnippet }
-   ];
-   /**
-   A facet that can be used to configure the key bindings used by
-   snippets. The default binds Tab to
-   [`nextSnippetField`](https://codemirror.net/6/docs/ref/#autocomplete.nextSnippetField), Shift-Tab to
-   [`prevSnippetField`](https://codemirror.net/6/docs/ref/#autocomplete.prevSnippetField), and Escape
-   to [`clearSnippet`](https://codemirror.net/6/docs/ref/#autocomplete.clearSnippet).
-   */
-   const snippetKeymap = /*@__PURE__*/Facet.define({
-       combine(maps) { return maps.length ? maps[0] : defaultSnippetKeymap; }
-   });
-   const addSnippetKeymap = /*@__PURE__*/Prec.highest(/*@__PURE__*/keymap.compute([snippetKeymap], state => state.facet(snippetKeymap)));
-   /**
-   Create a completion from a snippet. Returns an object with the
-   properties from `completion`, plus an `apply` function that
-   applies the snippet.
-   */
-   function snippetCompletion(template, completion) {
-       return Object.assign(Object.assign({}, completion), { apply: snippet(template) });
-   }
-   const snippetPointerHandler = /*@__PURE__*/EditorView.domEventHandlers({
-       mousedown(event, view) {
-           let active = view.state.field(snippetState, false), pos;
-           if (!active || (pos = view.posAtCoords({ x: event.clientX, y: event.clientY })) == null)
-               return false;
-           let match = active.ranges.find(r => r.from <= pos && r.to >= pos);
-           if (!match || match.field == active.active)
-               return false;
-           view.dispatch({
-               selection: fieldSelection(active.ranges, match.field),
-               effects: setActive.of(active.ranges.some(r => r.field > match.field) ? new ActiveSnippet(active.ranges, match.field) : null)
-           });
-           return true;
-       }
-   });
-   const closedBracket = /*@__PURE__*/new class extends RangeValue {
-   };
-   closedBracket.startSide = 1;
-   closedBracket.endSide = -1;
-
    class CompositeBlock {
        constructor(type, 
        // Used for indentation in list items, markup character in lists
@@ -22837,6 +21922,434 @@
      tokenPrec: 12712
    });
 
+   function toSet(chars) {
+       let flat = Object.keys(chars).join("");
+       let words = /\w/.test(flat);
+       if (words)
+           flat = flat.replace(/\w/g, "");
+       return `[${words ? "\\w" : ""}${flat.replace(/[^\w\s]/g, "\\$&")}]`;
+   }
+   function prefixMatch(options) {
+       let first = Object.create(null), rest = Object.create(null);
+       for (let { label } of options) {
+           first[label[0]] = true;
+           for (let i = 1; i < label.length; i++)
+               rest[label[i]] = true;
+       }
+       let source = toSet(first) + toSet(rest) + "*$";
+       return [new RegExp("^" + source), new RegExp(source)];
+   }
+   /**
+   Given a a fixed array of options, return an autocompleter that
+   completes them.
+   */
+   function completeFromList(list) {
+       let options = list.map(o => typeof o == "string" ? { label: o } : o);
+       let [validFor, match] = options.every(o => /^\w+$/.test(o.label)) ? [/\w*$/, /\w+$/] : prefixMatch(options);
+       return (context) => {
+           let token = context.matchBefore(match);
+           return token || context.explicit ? { from: token ? token.from : context.pos, options, validFor } : null;
+       };
+   }
+   /**
+   Wrap the given completion source so that it will not fire when the
+   cursor is in a syntax node with one of the given names.
+   */
+   function ifNotIn(nodes, source) {
+       return (context) => {
+           for (let pos = syntaxTree(context.state).resolveInner(context.pos, -1); pos; pos = pos.parent) {
+               if (nodes.indexOf(pos.name) > -1)
+                   return null;
+               if (pos.type.isTop)
+                   break;
+           }
+           return source(context);
+       };
+   }
+   /**
+   This annotation is added to transactions that are produced by
+   picking a completion.
+   */
+   const pickedCompletion = /*@__PURE__*/Annotation.define();
+
+   const baseTheme = /*@__PURE__*/EditorView.baseTheme({
+       ".cm-tooltip.cm-tooltip-autocomplete": {
+           "& > ul": {
+               fontFamily: "monospace",
+               whiteSpace: "nowrap",
+               overflow: "hidden auto",
+               maxWidth_fallback: "700px",
+               maxWidth: "min(700px, 95vw)",
+               minWidth: "250px",
+               maxHeight: "10em",
+               height: "100%",
+               listStyle: "none",
+               margin: 0,
+               padding: 0,
+               "& > li, & > completion-section": {
+                   padding: "1px 3px",
+                   lineHeight: 1.2
+               },
+               "& > li": {
+                   overflowX: "hidden",
+                   textOverflow: "ellipsis",
+                   cursor: "pointer"
+               },
+               "& > completion-section": {
+                   display: "list-item",
+                   borderBottom: "1px solid silver",
+                   paddingLeft: "0.5em",
+                   opacity: 0.7
+               }
+           }
+       },
+       "&light .cm-tooltip-autocomplete ul li[aria-selected]": {
+           background: "#17c",
+           color: "white",
+       },
+       "&light .cm-tooltip-autocomplete-disabled ul li[aria-selected]": {
+           background: "#777",
+       },
+       "&dark .cm-tooltip-autocomplete ul li[aria-selected]": {
+           background: "#347",
+           color: "white",
+       },
+       "&dark .cm-tooltip-autocomplete-disabled ul li[aria-selected]": {
+           background: "#444",
+       },
+       ".cm-completionListIncompleteTop:before, .cm-completionListIncompleteBottom:after": {
+           content: '"···"',
+           opacity: 0.5,
+           display: "block",
+           textAlign: "center"
+       },
+       ".cm-tooltip.cm-completionInfo": {
+           position: "absolute",
+           padding: "3px 9px",
+           width: "max-content",
+           maxWidth: `${400 /* Info.Width */}px`,
+           boxSizing: "border-box"
+       },
+       ".cm-completionInfo.cm-completionInfo-left": { right: "100%" },
+       ".cm-completionInfo.cm-completionInfo-right": { left: "100%" },
+       ".cm-completionInfo.cm-completionInfo-left-narrow": { right: `${30 /* Info.Margin */}px` },
+       ".cm-completionInfo.cm-completionInfo-right-narrow": { left: `${30 /* Info.Margin */}px` },
+       "&light .cm-snippetField": { backgroundColor: "#00000022" },
+       "&dark .cm-snippetField": { backgroundColor: "#ffffff22" },
+       ".cm-snippetFieldPosition": {
+           verticalAlign: "text-top",
+           width: 0,
+           height: "1.15em",
+           display: "inline-block",
+           margin: "0 -0.7px -.7em",
+           borderLeft: "1.4px dotted #888"
+       },
+       ".cm-completionMatchedText": {
+           textDecoration: "underline"
+       },
+       ".cm-completionDetail": {
+           marginLeft: "0.5em",
+           fontStyle: "italic"
+       },
+       ".cm-completionIcon": {
+           fontSize: "90%",
+           width: ".8em",
+           display: "inline-block",
+           textAlign: "center",
+           paddingRight: ".6em",
+           opacity: "0.6",
+           boxSizing: "content-box"
+       },
+       ".cm-completionIcon-function, .cm-completionIcon-method": {
+           "&:after": { content: "'ƒ'" }
+       },
+       ".cm-completionIcon-class": {
+           "&:after": { content: "'○'" }
+       },
+       ".cm-completionIcon-interface": {
+           "&:after": { content: "'◌'" }
+       },
+       ".cm-completionIcon-variable": {
+           "&:after": { content: "'𝑥'" }
+       },
+       ".cm-completionIcon-constant": {
+           "&:after": { content: "'𝐶'" }
+       },
+       ".cm-completionIcon-type": {
+           "&:after": { content: "'𝑡'" }
+       },
+       ".cm-completionIcon-enum": {
+           "&:after": { content: "'∪'" }
+       },
+       ".cm-completionIcon-property": {
+           "&:after": { content: "'□'" }
+       },
+       ".cm-completionIcon-keyword": {
+           "&:after": { content: "'🔑\uFE0E'" } // Disable emoji rendering
+       },
+       ".cm-completionIcon-namespace": {
+           "&:after": { content: "'▢'" }
+       },
+       ".cm-completionIcon-text": {
+           "&:after": { content: "'abc'", fontSize: "50%", verticalAlign: "middle" }
+       }
+   });
+
+   class FieldPos {
+       constructor(field, line, from, to) {
+           this.field = field;
+           this.line = line;
+           this.from = from;
+           this.to = to;
+       }
+   }
+   class FieldRange {
+       constructor(field, from, to) {
+           this.field = field;
+           this.from = from;
+           this.to = to;
+       }
+       map(changes) {
+           let from = changes.mapPos(this.from, -1, MapMode.TrackDel);
+           let to = changes.mapPos(this.to, 1, MapMode.TrackDel);
+           return from == null || to == null ? null : new FieldRange(this.field, from, to);
+       }
+   }
+   class Snippet {
+       constructor(lines, fieldPositions) {
+           this.lines = lines;
+           this.fieldPositions = fieldPositions;
+       }
+       instantiate(state, pos) {
+           let text = [], lineStart = [pos];
+           let lineObj = state.doc.lineAt(pos), baseIndent = /^\s*/.exec(lineObj.text)[0];
+           for (let line of this.lines) {
+               if (text.length) {
+                   let indent = baseIndent, tabs = /^\t*/.exec(line)[0].length;
+                   for (let i = 0; i < tabs; i++)
+                       indent += state.facet(indentUnit);
+                   lineStart.push(pos + indent.length - tabs);
+                   line = indent + line.slice(tabs);
+               }
+               text.push(line);
+               pos += line.length + 1;
+           }
+           let ranges = this.fieldPositions.map(pos => new FieldRange(pos.field, lineStart[pos.line] + pos.from, lineStart[pos.line] + pos.to));
+           return { text, ranges };
+       }
+       static parse(template) {
+           let fields = [];
+           let lines = [], positions = [], m;
+           for (let line of template.split(/\r\n?|\n/)) {
+               while (m = /[#$]\{(?:(\d+)(?::([^}]*))?|([^}]*))\}/.exec(line)) {
+                   let seq = m[1] ? +m[1] : null, name = m[2] || m[3] || "", found = -1;
+                   for (let i = 0; i < fields.length; i++) {
+                       if (seq != null ? fields[i].seq == seq : name ? fields[i].name == name : false)
+                           found = i;
+                   }
+                   if (found < 0) {
+                       let i = 0;
+                       while (i < fields.length && (seq == null || (fields[i].seq != null && fields[i].seq < seq)))
+                           i++;
+                       fields.splice(i, 0, { seq, name });
+                       found = i;
+                       for (let pos of positions)
+                           if (pos.field >= found)
+                               pos.field++;
+                   }
+                   positions.push(new FieldPos(found, lines.length, m.index, m.index + name.length));
+                   line = line.slice(0, m.index) + name + line.slice(m.index + m[0].length);
+               }
+               for (let esc; esc = /\\([{}])/.exec(line);) {
+                   line = line.slice(0, esc.index) + esc[1] + line.slice(esc.index + esc[0].length);
+                   for (let pos of positions)
+                       if (pos.line == lines.length && pos.from > esc.index) {
+                           pos.from--;
+                           pos.to--;
+                       }
+               }
+               lines.push(line);
+           }
+           return new Snippet(lines, positions);
+       }
+   }
+   let fieldMarker = /*@__PURE__*/Decoration.widget({ widget: /*@__PURE__*/new class extends WidgetType {
+           toDOM() {
+               let span = document.createElement("span");
+               span.className = "cm-snippetFieldPosition";
+               return span;
+           }
+           ignoreEvent() { return false; }
+       } });
+   let fieldRange = /*@__PURE__*/Decoration.mark({ class: "cm-snippetField" });
+   class ActiveSnippet {
+       constructor(ranges, active) {
+           this.ranges = ranges;
+           this.active = active;
+           this.deco = Decoration.set(ranges.map(r => (r.from == r.to ? fieldMarker : fieldRange).range(r.from, r.to)));
+       }
+       map(changes) {
+           let ranges = [];
+           for (let r of this.ranges) {
+               let mapped = r.map(changes);
+               if (!mapped)
+                   return null;
+               ranges.push(mapped);
+           }
+           return new ActiveSnippet(ranges, this.active);
+       }
+       selectionInsideField(sel) {
+           return sel.ranges.every(range => this.ranges.some(r => r.field == this.active && r.from <= range.from && r.to >= range.to));
+       }
+   }
+   const setActive = /*@__PURE__*/StateEffect.define({
+       map(value, changes) { return value && value.map(changes); }
+   });
+   const moveToField = /*@__PURE__*/StateEffect.define();
+   const snippetState = /*@__PURE__*/StateField.define({
+       create() { return null; },
+       update(value, tr) {
+           for (let effect of tr.effects) {
+               if (effect.is(setActive))
+                   return effect.value;
+               if (effect.is(moveToField) && value)
+                   return new ActiveSnippet(value.ranges, effect.value);
+           }
+           if (value && tr.docChanged)
+               value = value.map(tr.changes);
+           if (value && tr.selection && !value.selectionInsideField(tr.selection))
+               value = null;
+           return value;
+       },
+       provide: f => EditorView.decorations.from(f, val => val ? val.deco : Decoration.none)
+   });
+   function fieldSelection(ranges, field) {
+       return EditorSelection.create(ranges.filter(r => r.field == field).map(r => EditorSelection.range(r.from, r.to)));
+   }
+   /**
+   Convert a snippet template to a function that can
+   [apply](https://codemirror.net/6/docs/ref/#autocomplete.Completion.apply) it. Snippets are written
+   using syntax like this:
+
+       "for (let ${index} = 0; ${index} < ${end}; ${index}++) {\n\t${}\n}"
+
+   Each `${}` placeholder (you may also use `#{}`) indicates a field
+   that the user can fill in. Its name, if any, will be the default
+   content for the field.
+
+   When the snippet is activated by calling the returned function,
+   the code is inserted at the given position. Newlines in the
+   template are indented by the indentation of the start line, plus
+   one [indent unit](https://codemirror.net/6/docs/ref/#language.indentUnit) per tab character after
+   the newline.
+
+   On activation, (all instances of) the first field are selected.
+   The user can move between fields with Tab and Shift-Tab as long as
+   the fields are active. Moving to the last field or moving the
+   cursor out of the current field deactivates the fields.
+
+   The order of fields defaults to textual order, but you can add
+   numbers to placeholders (`${1}` or `${1:defaultText}`) to provide
+   a custom order.
+
+   To include a literal `{` or `}` in your template, put a backslash
+   in front of it. This will be removed and the brace will not be
+   interpreted as indicating a placeholder.
+   */
+   function snippet(template) {
+       let snippet = Snippet.parse(template);
+       return (editor, completion, from, to) => {
+           let { text, ranges } = snippet.instantiate(editor.state, from);
+           let spec = {
+               changes: { from, to, insert: Text.of(text) },
+               scrollIntoView: true,
+               annotations: completion ? pickedCompletion.of(completion) : undefined
+           };
+           if (ranges.length)
+               spec.selection = fieldSelection(ranges, 0);
+           if (ranges.length > 1) {
+               let active = new ActiveSnippet(ranges, 0);
+               let effects = spec.effects = [setActive.of(active)];
+               if (editor.state.field(snippetState, false) === undefined)
+                   effects.push(StateEffect.appendConfig.of([snippetState, addSnippetKeymap, snippetPointerHandler, baseTheme]));
+           }
+           editor.dispatch(editor.state.update(spec));
+       };
+   }
+   function moveField(dir) {
+       return ({ state, dispatch }) => {
+           let active = state.field(snippetState, false);
+           if (!active || dir < 0 && active.active == 0)
+               return false;
+           let next = active.active + dir, last = dir > 0 && !active.ranges.some(r => r.field == next + dir);
+           dispatch(state.update({
+               selection: fieldSelection(active.ranges, next),
+               effects: setActive.of(last ? null : new ActiveSnippet(active.ranges, next))
+           }));
+           return true;
+       };
+   }
+   /**
+   A command that clears the active snippet, if any.
+   */
+   const clearSnippet = ({ state, dispatch }) => {
+       let active = state.field(snippetState, false);
+       if (!active)
+           return false;
+       dispatch(state.update({ effects: setActive.of(null) }));
+       return true;
+   };
+   /**
+   Move to the next snippet field, if available.
+   */
+   const nextSnippetField = /*@__PURE__*/moveField(1);
+   /**
+   Move to the previous snippet field, if available.
+   */
+   const prevSnippetField = /*@__PURE__*/moveField(-1);
+   const defaultSnippetKeymap = [
+       { key: "Tab", run: nextSnippetField, shift: prevSnippetField },
+       { key: "Escape", run: clearSnippet }
+   ];
+   /**
+   A facet that can be used to configure the key bindings used by
+   snippets. The default binds Tab to
+   [`nextSnippetField`](https://codemirror.net/6/docs/ref/#autocomplete.nextSnippetField), Shift-Tab to
+   [`prevSnippetField`](https://codemirror.net/6/docs/ref/#autocomplete.prevSnippetField), and Escape
+   to [`clearSnippet`](https://codemirror.net/6/docs/ref/#autocomplete.clearSnippet).
+   */
+   const snippetKeymap = /*@__PURE__*/Facet.define({
+       combine(maps) { return maps.length ? maps[0] : defaultSnippetKeymap; }
+   });
+   const addSnippetKeymap = /*@__PURE__*/Prec.highest(/*@__PURE__*/keymap.compute([snippetKeymap], state => state.facet(snippetKeymap)));
+   /**
+   Create a completion from a snippet. Returns an object with the
+   properties from `completion`, plus an `apply` function that
+   applies the snippet.
+   */
+   function snippetCompletion(template, completion) {
+       return Object.assign(Object.assign({}, completion), { apply: snippet(template) });
+   }
+   const snippetPointerHandler = /*@__PURE__*/EditorView.domEventHandlers({
+       mousedown(event, view) {
+           let active = view.state.field(snippetState, false), pos;
+           if (!active || (pos = view.posAtCoords({ x: event.clientX, y: event.clientY })) == null)
+               return false;
+           let match = active.ranges.find(r => r.from <= pos && r.to >= pos);
+           if (!match || match.field == active.active)
+               return false;
+           view.dispatch({
+               selection: fieldSelection(active.ranges, match.field),
+               effects: setActive.of(active.ranges.some(r => r.field > match.field) ? new ActiveSnippet(active.ranges, match.field) : null)
+           });
+           return true;
+       }
+   });
+   const closedBracket = /*@__PURE__*/new class extends RangeValue {
+   };
+   closedBracket.startSide = 1;
+   closedBracket.endSide = -1;
+
    /**
    A collection of JavaScript-related
    [snippets](https://codemirror.net/6/docs/ref/#autocomplete.snippet).
@@ -24133,6 +23646,493 @@
            support.push(Prec.high(keymap.of(markdownKeymap)));
        return new LanguageSupport(mkLang(parser.configure(extensions)), support);
    }
+
+   const basicNormalize = typeof String.prototype.normalize == "function"
+       ? x => x.normalize("NFKD") : x => x;
+   /**
+   A search cursor provides an iterator over text matches in a
+   document.
+   */
+   class SearchCursor {
+       /**
+       Create a text cursor. The query is the search string, `from` to
+       `to` provides the region to search.
+       
+       When `normalize` is given, it will be called, on both the query
+       string and the content it is matched against, before comparing.
+       You can, for example, create a case-insensitive search by
+       passing `s => s.toLowerCase()`.
+       
+       Text is always normalized with
+       [`.normalize("NFKD")`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize)
+       (when supported).
+       */
+       constructor(text, query, from = 0, to = text.length, normalize, test) {
+           this.test = test;
+           /**
+           The current match (only holds a meaningful value after
+           [`next`](https://codemirror.net/6/docs/ref/#search.SearchCursor.next) has been called and when
+           `done` is false).
+           */
+           this.value = { from: 0, to: 0 };
+           /**
+           Whether the end of the iterated region has been reached.
+           */
+           this.done = false;
+           this.matches = [];
+           this.buffer = "";
+           this.bufferPos = 0;
+           this.iter = text.iterRange(from, to);
+           this.bufferStart = from;
+           this.normalize = normalize ? x => normalize(basicNormalize(x)) : basicNormalize;
+           this.query = this.normalize(query);
+       }
+       peek() {
+           if (this.bufferPos == this.buffer.length) {
+               this.bufferStart += this.buffer.length;
+               this.iter.next();
+               if (this.iter.done)
+                   return -1;
+               this.bufferPos = 0;
+               this.buffer = this.iter.value;
+           }
+           return codePointAt(this.buffer, this.bufferPos);
+       }
+       /**
+       Look for the next match. Updates the iterator's
+       [`value`](https://codemirror.net/6/docs/ref/#search.SearchCursor.value) and
+       [`done`](https://codemirror.net/6/docs/ref/#search.SearchCursor.done) properties. Should be called
+       at least once before using the cursor.
+       */
+       next() {
+           while (this.matches.length)
+               this.matches.pop();
+           return this.nextOverlapping();
+       }
+       /**
+       The `next` method will ignore matches that partially overlap a
+       previous match. This method behaves like `next`, but includes
+       such matches.
+       */
+       nextOverlapping() {
+           for (;;) {
+               let next = this.peek();
+               if (next < 0) {
+                   this.done = true;
+                   return this;
+               }
+               let str = fromCodePoint(next), start = this.bufferStart + this.bufferPos;
+               this.bufferPos += codePointSize(next);
+               let norm = this.normalize(str);
+               for (let i = 0, pos = start;; i++) {
+                   let code = norm.charCodeAt(i);
+                   let match = this.match(code, pos);
+                   if (match) {
+                       this.value = match;
+                       return this;
+                   }
+                   if (i == norm.length - 1)
+                       break;
+                   if (pos == start && i < str.length && str.charCodeAt(i) == code)
+                       pos++;
+               }
+           }
+       }
+       match(code, pos) {
+           let match = null;
+           for (let i = 0; i < this.matches.length; i += 2) {
+               let index = this.matches[i], keep = false;
+               if (this.query.charCodeAt(index) == code) {
+                   if (index == this.query.length - 1) {
+                       match = { from: this.matches[i + 1], to: pos + 1 };
+                   }
+                   else {
+                       this.matches[i]++;
+                       keep = true;
+                   }
+               }
+               if (!keep) {
+                   this.matches.splice(i, 2);
+                   i -= 2;
+               }
+           }
+           if (this.query.charCodeAt(0) == code) {
+               if (this.query.length == 1)
+                   match = { from: pos, to: pos + 1 };
+               else
+                   this.matches.push(1, pos);
+           }
+           if (match && this.test && !this.test(match.from, match.to, this.buffer, this.bufferPos))
+               match = null;
+           return match;
+       }
+   }
+   if (typeof Symbol != "undefined")
+       SearchCursor.prototype[Symbol.iterator] = function () { return this; };
+
+   const empty = { from: -1, to: -1, match: /*@__PURE__*//.*/.exec("") };
+   const baseFlags = "gm" + (/x/.unicode == null ? "" : "u");
+   /**
+   This class is similar to [`SearchCursor`](https://codemirror.net/6/docs/ref/#search.SearchCursor)
+   but searches for a regular expression pattern instead of a plain
+   string.
+   */
+   class RegExpCursor {
+       /**
+       Create a cursor that will search the given range in the given
+       document. `query` should be the raw pattern (as you'd pass it to
+       `new RegExp`).
+       */
+       constructor(text, query, options, from = 0, to = text.length) {
+           this.text = text;
+           this.to = to;
+           this.curLine = "";
+           /**
+           Set to `true` when the cursor has reached the end of the search
+           range.
+           */
+           this.done = false;
+           /**
+           Will contain an object with the extent of the match and the
+           match object when [`next`](https://codemirror.net/6/docs/ref/#search.RegExpCursor.next)
+           sucessfully finds a match.
+           */
+           this.value = empty;
+           if (/\\[sWDnr]|\n|\r|\[\^/.test(query))
+               return new MultilineRegExpCursor(text, query, options, from, to);
+           this.re = new RegExp(query, baseFlags + ((options === null || options === void 0 ? void 0 : options.ignoreCase) ? "i" : ""));
+           this.test = options === null || options === void 0 ? void 0 : options.test;
+           this.iter = text.iter();
+           let startLine = text.lineAt(from);
+           this.curLineStart = startLine.from;
+           this.matchPos = toCharEnd(text, from);
+           this.getLine(this.curLineStart);
+       }
+       getLine(skip) {
+           this.iter.next(skip);
+           if (this.iter.lineBreak) {
+               this.curLine = "";
+           }
+           else {
+               this.curLine = this.iter.value;
+               if (this.curLineStart + this.curLine.length > this.to)
+                   this.curLine = this.curLine.slice(0, this.to - this.curLineStart);
+               this.iter.next();
+           }
+       }
+       nextLine() {
+           this.curLineStart = this.curLineStart + this.curLine.length + 1;
+           if (this.curLineStart > this.to)
+               this.curLine = "";
+           else
+               this.getLine(0);
+       }
+       /**
+       Move to the next match, if there is one.
+       */
+       next() {
+           for (let off = this.matchPos - this.curLineStart;;) {
+               this.re.lastIndex = off;
+               let match = this.matchPos <= this.to && this.re.exec(this.curLine);
+               if (match) {
+                   let from = this.curLineStart + match.index, to = from + match[0].length;
+                   this.matchPos = toCharEnd(this.text, to + (from == to ? 1 : 0));
+                   if (from == this.curLineStart + this.curLine.length)
+                       this.nextLine();
+                   if ((from < to || from > this.value.to) && (!this.test || this.test(from, to, match))) {
+                       this.value = { from, to, match };
+                       return this;
+                   }
+                   off = this.matchPos - this.curLineStart;
+               }
+               else if (this.curLineStart + this.curLine.length < this.to) {
+                   this.nextLine();
+                   off = 0;
+               }
+               else {
+                   this.done = true;
+                   return this;
+               }
+           }
+       }
+   }
+   const flattened = /*@__PURE__*/new WeakMap();
+   // Reusable (partially) flattened document strings
+   class FlattenedDoc {
+       constructor(from, text) {
+           this.from = from;
+           this.text = text;
+       }
+       get to() { return this.from + this.text.length; }
+       static get(doc, from, to) {
+           let cached = flattened.get(doc);
+           if (!cached || cached.from >= to || cached.to <= from) {
+               let flat = new FlattenedDoc(from, doc.sliceString(from, to));
+               flattened.set(doc, flat);
+               return flat;
+           }
+           if (cached.from == from && cached.to == to)
+               return cached;
+           let { text, from: cachedFrom } = cached;
+           if (cachedFrom > from) {
+               text = doc.sliceString(from, cachedFrom) + text;
+               cachedFrom = from;
+           }
+           if (cached.to < to)
+               text += doc.sliceString(cached.to, to);
+           flattened.set(doc, new FlattenedDoc(cachedFrom, text));
+           return new FlattenedDoc(from, text.slice(from - cachedFrom, to - cachedFrom));
+       }
+   }
+   class MultilineRegExpCursor {
+       constructor(text, query, options, from, to) {
+           this.text = text;
+           this.to = to;
+           this.done = false;
+           this.value = empty;
+           this.matchPos = toCharEnd(text, from);
+           this.re = new RegExp(query, baseFlags + ((options === null || options === void 0 ? void 0 : options.ignoreCase) ? "i" : ""));
+           this.test = options === null || options === void 0 ? void 0 : options.test;
+           this.flat = FlattenedDoc.get(text, from, this.chunkEnd(from + 5000 /* Base */));
+       }
+       chunkEnd(pos) {
+           return pos >= this.to ? this.to : this.text.lineAt(pos).to;
+       }
+       next() {
+           for (;;) {
+               let off = this.re.lastIndex = this.matchPos - this.flat.from;
+               let match = this.re.exec(this.flat.text);
+               // Skip empty matches directly after the last match
+               if (match && !match[0] && match.index == off) {
+                   this.re.lastIndex = off + 1;
+                   match = this.re.exec(this.flat.text);
+               }
+               if (match) {
+                   let from = this.flat.from + match.index, to = from + match[0].length;
+                   // If a match goes almost to the end of a noncomplete chunk, try
+                   // again, since it'll likely be able to match more
+                   if ((this.flat.to >= this.to || match.index + match[0].length <= this.flat.text.length - 10) &&
+                       (!this.test || this.test(from, to, match))) {
+                       this.value = { from, to, match };
+                       this.matchPos = toCharEnd(this.text, to + (from == to ? 1 : 0));
+                       return this;
+                   }
+               }
+               if (this.flat.to == this.to) {
+                   this.done = true;
+                   return this;
+               }
+               // Grow the flattened doc
+               this.flat = FlattenedDoc.get(this.text, this.flat.from, this.chunkEnd(this.flat.from + this.flat.text.length * 2));
+           }
+       }
+   }
+   if (typeof Symbol != "undefined") {
+       RegExpCursor.prototype[Symbol.iterator] = MultilineRegExpCursor.prototype[Symbol.iterator] =
+           function () { return this; };
+   }
+   function validRegExp(source) {
+       try {
+           new RegExp(source, baseFlags);
+           return true;
+       }
+       catch (_a) {
+           return false;
+       }
+   }
+   function toCharEnd(text, pos) {
+       if (pos >= text.length)
+           return pos;
+       let line = text.lineAt(pos), next;
+       while (pos < line.to && (next = line.text.charCodeAt(pos - line.from)) >= 0xDC00 && next < 0xE000)
+           pos++;
+       return pos;
+   }
+   /**
+   A search query. Part of the editor's search state.
+   */
+   class SearchQuery {
+       /**
+       Create a query object.
+       */
+       constructor(config) {
+           this.search = config.search;
+           this.caseSensitive = !!config.caseSensitive;
+           this.literal = !!config.literal;
+           this.regexp = !!config.regexp;
+           this.replace = config.replace || "";
+           this.valid = !!this.search && (!this.regexp || validRegExp(this.search));
+           this.unquoted = this.unquote(this.search);
+           this.wholeWord = !!config.wholeWord;
+       }
+       /**
+       @internal
+       */
+       unquote(text) {
+           return this.literal ? text :
+               text.replace(/\\([nrt\\])/g, (_, ch) => ch == "n" ? "\n" : ch == "r" ? "\r" : ch == "t" ? "\t" : "\\");
+       }
+       /**
+       Compare this query to another query.
+       */
+       eq(other) {
+           return this.search == other.search && this.replace == other.replace &&
+               this.caseSensitive == other.caseSensitive && this.regexp == other.regexp &&
+               this.wholeWord == other.wholeWord;
+       }
+       /**
+       @internal
+       */
+       create() {
+           return this.regexp ? new RegExpQuery(this) : new StringQuery(this);
+       }
+       /**
+       Get a search cursor for this query, searching through the given
+       range in the given state.
+       */
+       getCursor(state, from = 0, to) {
+           let st = state.doc ? state : EditorState.create({ doc: state });
+           if (to == null)
+               to = st.doc.length;
+           return this.regexp ? regexpCursor(this, st, from, to) : stringCursor(this, st, from, to);
+       }
+   }
+   class QueryType {
+       constructor(spec) {
+           this.spec = spec;
+       }
+   }
+   function stringCursor(spec, state, from, to) {
+       return new SearchCursor(state.doc, spec.unquoted, from, to, spec.caseSensitive ? undefined : x => x.toLowerCase(), spec.wholeWord ? stringWordTest(state.doc, state.charCategorizer(state.selection.main.head)) : undefined);
+   }
+   function stringWordTest(doc, categorizer) {
+       return (from, to, buf, bufPos) => {
+           if (bufPos > from || bufPos + buf.length < to) {
+               bufPos = Math.max(0, from - 2);
+               buf = doc.sliceString(bufPos, Math.min(doc.length, to + 2));
+           }
+           return (categorizer(charBefore(buf, from - bufPos)) != CharCategory.Word ||
+               categorizer(charAfter(buf, from - bufPos)) != CharCategory.Word) &&
+               (categorizer(charAfter(buf, to - bufPos)) != CharCategory.Word ||
+                   categorizer(charBefore(buf, to - bufPos)) != CharCategory.Word);
+       };
+   }
+   class StringQuery extends QueryType {
+       constructor(spec) {
+           super(spec);
+       }
+       nextMatch(state, curFrom, curTo) {
+           let cursor = stringCursor(this.spec, state, curTo, state.doc.length).nextOverlapping();
+           if (cursor.done)
+               cursor = stringCursor(this.spec, state, 0, curFrom).nextOverlapping();
+           return cursor.done ? null : cursor.value;
+       }
+       // Searching in reverse is, rather than implementing an inverted search
+       // cursor, done by scanning chunk after chunk forward.
+       prevMatchInRange(state, from, to) {
+           for (let pos = to;;) {
+               let start = Math.max(from, pos - 10000 /* ChunkSize */ - this.spec.unquoted.length);
+               let cursor = stringCursor(this.spec, state, start, pos), range = null;
+               while (!cursor.nextOverlapping().done)
+                   range = cursor.value;
+               if (range)
+                   return range;
+               if (start == from)
+                   return null;
+               pos -= 10000 /* ChunkSize */;
+           }
+       }
+       prevMatch(state, curFrom, curTo) {
+           return this.prevMatchInRange(state, 0, curFrom) ||
+               this.prevMatchInRange(state, curTo, state.doc.length);
+       }
+       getReplacement(_result) { return this.spec.unquote(this.spec.replace); }
+       matchAll(state, limit) {
+           let cursor = stringCursor(this.spec, state, 0, state.doc.length), ranges = [];
+           while (!cursor.next().done) {
+               if (ranges.length >= limit)
+                   return null;
+               ranges.push(cursor.value);
+           }
+           return ranges;
+       }
+       highlight(state, from, to, add) {
+           let cursor = stringCursor(this.spec, state, Math.max(0, from - this.spec.unquoted.length), Math.min(to + this.spec.unquoted.length, state.doc.length));
+           while (!cursor.next().done)
+               add(cursor.value.from, cursor.value.to);
+       }
+   }
+   function regexpCursor(spec, state, from, to) {
+       return new RegExpCursor(state.doc, spec.search, {
+           ignoreCase: !spec.caseSensitive,
+           test: spec.wholeWord ? regexpWordTest(state.charCategorizer(state.selection.main.head)) : undefined
+       }, from, to);
+   }
+   function charBefore(str, index) {
+       return str.slice(findClusterBreak(str, index, false), index);
+   }
+   function charAfter(str, index) {
+       return str.slice(index, findClusterBreak(str, index));
+   }
+   function regexpWordTest(categorizer) {
+       return (_from, _to, match) => !match[0].length ||
+           (categorizer(charBefore(match.input, match.index)) != CharCategory.Word ||
+               categorizer(charAfter(match.input, match.index)) != CharCategory.Word) &&
+               (categorizer(charAfter(match.input, match.index + match[0].length)) != CharCategory.Word ||
+                   categorizer(charBefore(match.input, match.index + match[0].length)) != CharCategory.Word);
+   }
+   class RegExpQuery extends QueryType {
+       nextMatch(state, curFrom, curTo) {
+           let cursor = regexpCursor(this.spec, state, curTo, state.doc.length).next();
+           if (cursor.done)
+               cursor = regexpCursor(this.spec, state, 0, curFrom).next();
+           return cursor.done ? null : cursor.value;
+       }
+       prevMatchInRange(state, from, to) {
+           for (let size = 1;; size++) {
+               let start = Math.max(from, to - size * 10000 /* ChunkSize */);
+               let cursor = regexpCursor(this.spec, state, start, to), range = null;
+               while (!cursor.next().done)
+                   range = cursor.value;
+               if (range && (start == from || range.from > start + 10))
+                   return range;
+               if (start == from)
+                   return null;
+           }
+       }
+       prevMatch(state, curFrom, curTo) {
+           return this.prevMatchInRange(state, 0, curFrom) ||
+               this.prevMatchInRange(state, curTo, state.doc.length);
+       }
+       getReplacement(result) {
+           return this.spec.unquote(this.spec.replace.replace(/\$([$&\d+])/g, (m, i) => i == "$" ? "$"
+               : i == "&" ? result.match[0]
+                   : i != "0" && +i < result.match.length ? result.match[i]
+                       : m));
+       }
+       matchAll(state, limit) {
+           let cursor = regexpCursor(this.spec, state, 0, state.doc.length), ranges = [];
+           while (!cursor.next().done) {
+               if (ranges.length >= limit)
+                   return null;
+               ranges.push(cursor.value);
+           }
+           return ranges;
+       }
+       highlight(state, from, to, add) {
+           let cursor = regexpCursor(this.spec, state, Math.max(0, from - 250 /* HighlightMargin */), Math.min(to + 250 /* HighlightMargin */, state.doc.length));
+           while (!cursor.next().done)
+               add(cursor.value.from, cursor.value.to);
+       }
+   }
+   /**
+   A state effect that updates the current search query. Note that
+   this only has an effect if the search state has been initialized
+   (by including [`search`](https://codemirror.net/6/docs/ref/#search.search) in your configuration or
+   by running [`openSearchPanel`](https://codemirror.net/6/docs/ref/#search.openSearchPanel) at least
+   once).
+   */
+   const setSearchQuery = /*@__PURE__*/StateEffect.define();
 
    // CodeMirror, copyright (c) by Marijn Haverbeke and others
    // Distributed under an MIT license: https://codemirror.net/5/LICENSE
@@ -31923,6 +31923,9 @@
        return view.cm || null;
    }
 
+   // COMPILE TO editor.bundle.js WITH THE FOLLOWING:
+   // .\node_modules\.bin\rollup .\src\main\resources\static\js\codemirror-config.mjs -f iife -o .\src\main\resources\static\js\codemirror-editor.bundle.js -p @rollup/plugin-node-resolve
+
    const editorElement = document.getElementById("editor");
    const formTextElement = document.getElementById("edit-content");
 
@@ -31942,9 +31945,42 @@
        {tag: tags$1.heading, class: "md-heading"},
        {tag: tags$1.strong, class: "md-bold"},
        {tag: tags$1.emphasis, class: "md-italic"},
+       {tag: tags$1.punctuation, class: "md-html-tag"},
+       {tag: tags$1.typeName, class: "md-html-tag-name"},
        {tag: tags$1.meta, class: "md-meta"},
-       {tag: tags$1.labelName, class: "md-meta-label"}
+       {tag: tags$1.labelName, class: "md-meta-label"},
+       {tag: tags$1.regexp, class: "md-math"},
+       {tag: tags$1.operator, class: "md-math-delimiter"}
    ]);
+
+   const InlineLatexDelim = {resolve: "InlineLatex", mark: "InlineLatexMark"};
+   const InlineLaTeX /* MarkdownConfig */ = {
+       defineNodes: [{
+           name: "InlineLatex",
+           style: tags$1.regexp
+       }, {
+           name: "InlineLatexMark",
+           style: tags$1.operator
+       }],
+       parseInline: [{
+           name: "InlineLatexParser",
+           parse(cx, next, pos) {
+               /* Handle OPENING delimiters: */
+               if (next == 36 /* $ */ && cx.char(pos + 1) == 96 /* ` */) {
+                   let startDelim = pos;
+                   let endDelim = pos + 2;
+                   /* Eagerly capture characters until either EOL is reached or an ending delimiter is found: */
+                   while (endDelim < cx.end && (cx.char(endDelim) != 96 || cx.char(endDelim+1) != 36)) endDelim++;
+                   if (endDelim >= cx.end) return -1; /* Ending delimiter not found. */
+
+                   cx.addDelimiter(InlineLatexDelim, startDelim, startDelim + 2, true, false);
+                   return cx.addDelimiter(InlineLatexDelim, endDelim, endDelim + 2, false, true);
+               }
+
+               return -1;
+           }
+       }]
+   };
 
    let startState = EditorState.create({
        doc: formTextElement.value,
@@ -31955,53 +31991,13 @@
            syntaxHighlighting(mdHighlighter),
            syncFormText,
            vim(),
-           markdown(),
+           markdown({base: markdownLanguage, extensions: [InlineLaTeX]}),
        ]
    });
 
    new EditorView({
        state: startState,
        parent: editorElement
-   });
-
-
-
-   let isPreview = false;
-   const previewButton = document.getElementById("preview-button");
-   const previewElement = document.getElementById("editor-preview");
-
-   const generatePreview = () => {
-       let req = new XMLHttpRequest();
-       req.onreadystatechange = () => {
-           if (req.readyState === 4) {
-               previewElement.innerHTML = req.response;
-           }
-       };
-       req.open('POST', '/edit/chapter/preview');
-       req.setRequestHeader('Content-type', 'text/markdown');
-       req.send(formTextElement.value);
-   };
-   previewButton.addEventListener('click', function togglePreview() {
-       // mde.togglePreview();
-       generatePreview();
-
-       if (!isPreview) {
-           isPreview = true;
-
-           document.getElementById("editor-preview").setAttribute("style", "visibility: visible");
-           document.getElementById("editor").setAttribute("style", "visibility: hidden");
-
-           document.getElementById("preview-icon").setAttribute("style", "display: none");
-           document.getElementById("no-preview-icon").removeAttribute("style");
-       } else {
-           isPreview = false;
-
-           document.getElementById("editor-preview").setAttribute("style", "visibility: hidden");
-           document.getElementById("editor").setAttribute("style", "visibility: visible");
-
-           document.getElementById("preview-icon").removeAttribute("style");
-           document.getElementById("no-preview-icon").setAttribute("style", "display: none");
-       }
    });
 
 })();

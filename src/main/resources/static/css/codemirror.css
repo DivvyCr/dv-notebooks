@@ -25,23 +25,27 @@
 }
 
 .cm-cursor {
-    border-left: .1rem solid white;
+    border-left: .15rem solid var(--highlight-foreground) !important;
 }
 
 .cm-fat-cursor {
     background: var(--highlight-foreground) !important;
     color: var(--default-background) !important;
+    outline: none !important;
 }
 
-:not(.cm-focused) .cm-fat-cursor {
-    outline: solid .1rem var(--highlight-foreground);
+.cm-editor:not(.cm-focused) .cm-fat-cursor {
+    background: none !important;
+    color: inherit !important;
+    outline: solid 1px var(--highlight-foreground) !important;
 }
 
 /* mdHighlighter */
 
 .md-heading {
-    color: var(--gold-accent);
+    color: var(--highlight-foreground);
     font-weight: 600;
+    text-decoration: underline;
 }
 
 .md-bold {
@@ -54,11 +58,19 @@
     font-weight: 600;
 }
 
-[class=md-meta] { /* Select ONLY md-meta. */
+.md-html-tag,
+.md-html-tag-name,
+[class=md-meta], /* Select ONLY md-meta class; without more in-line classes. */
+.md-meta-label {
+    color: var(--highlight-foreground);
+    font-weight: 600;
+}
+
+.md-math-delimiter {
     color: var(--aside-tip-highlight);
     font-weight: 600;
 }
 
-.md-meta-label {
+.md-math {
     color: var(--aside-tip-highlight);
 }
