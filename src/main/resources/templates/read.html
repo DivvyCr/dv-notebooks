@@ -1,15 +1,15 @@
 <html layout:decorate="~{layouts/main.html}">
 <div layout:fragment="chapter-options"
      class="chapter-select-buttons">
-  <button sec:authorize="hasRole('ADMIN')" class="icon-button" type="button" th:if="${chapterObj != null}"
-          th:onclick="'location.href=\'' + @{/edit/chapter?id={x}(x=${chapterObj.id})} + '\''">
-    <i class="fa-solid fa-pen-to-square"></i>
-  </button>
-  <button sec:authorize="hasRole('ADMIN')" class="icon-button" type="button"
+  <button sec:authorize="hasRole('ADMIN')" class="base-button" type="button"
           th:onclick="'location.href=\'' + @{/make/chapter?id={x}(x=${chapterObj.id})} + '\''">
     <i class="fa-solid fa-plus"></i>
   </button>
-  <button sec:authorize="!hasRole('ADMIN')" class="footer-button" type="button" onclick="location.href='/login'">
+  <button sec:authorize="hasRole('ADMIN')" class="base-button" type="button" th:if="${chapterObj != null}"
+          th:onclick="'location.href=\'' + @{/edit/chapter?id={x}(x=${chapterObj.id})} + '\''">
+    <i class="fa-solid fa-pen-to-square"></i>
+  </button>
+  <button sec:authorize="!hasRole('ADMIN')" class="base-button" type="button" onclick="location.href='/login'">
     <i class="fa-solid fa-user-shield"></i>
   </button>
 </div>

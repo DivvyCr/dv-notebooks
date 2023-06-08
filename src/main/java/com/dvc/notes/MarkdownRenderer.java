@@ -1,6 +1,6 @@
 package com.dvc.notes;
 
-import com.dvc.notes.admonition.AdmonitionExtension;
+import com.dvc.notes.definition.DefinitionExtension;
 import com.vladsch.flexmark.ext.attributes.AttributesExtension;
 import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
@@ -13,10 +13,9 @@ import java.util.List;
 public class MarkdownRenderer {
 
     private static final MutableDataSet flexmarkOptions = new MutableDataSet()
-            .set(AdmonitionExtension.ALLOW_LAZY_CONTINUATION, false) // Must indent admonition content!
             .set(Parser.EXTENSIONS, List.of(
-                    AdmonitionExtension.create(),
                     AttributesExtension.create(),
+                    DefinitionExtension.create(),
                     GitLabExtension.create(),
                     TablesExtension.create()));
     private static final Parser markdownParser = Parser.builder(flexmarkOptions).build();
