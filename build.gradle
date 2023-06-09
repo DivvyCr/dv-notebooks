@@ -2,10 +2,11 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.0'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.github.johnrengelman.shadow' version '7.1.2' // To build an Uber-Jar (aka. Fat Jar)
 }
 
 group = 'com.dvc'
-version = '0.0.1-SNAPSHOT'
+version = '0.1-BETA'
 sourceCompatibility = '17'
 
 repositories {
@@ -15,20 +16,20 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
-	implementation 'com.vladsch.flexmark:flexmark-all:0.64.0'
-	
+	implementation 'com.vladsch.flexmark:flexmark:0.64.8'
+	implementation 'com.vladsch.flexmark:flexmark-ext-attributes:0.64.8'
+	implementation 'com.vladsch.flexmark:flexmark-ext-gitlab:0.64.8'
+	implementation 'com.vladsch.flexmark:flexmark-ext-tables:0.64.8'
+
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-        implementation 'org.springframework.security:spring-security-crypto:6.0.2'
+	implementation 'org.springframework.security:spring-security-crypto:6.0.2'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
-        implementation 'org.postgresql:postgresql:42.6.0'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	// testImplementation 'org.springframework.security:spring-security-test'
-}
 
-// tasks.named('test') {
-	// useJUnitPlatform()
-// }
+//	implementation 'com.google.cloud:spring-cloud-gcp-starter-sql-postgresql:4.4.0'
+	implementation 'org.postgresql:postgresql:42.6.0'
+	runtimeOnly 'org.postgresql:postgresql'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

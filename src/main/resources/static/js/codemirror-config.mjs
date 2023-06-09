@@ -63,17 +63,14 @@ const InlineLaTeX /* MarkdownConfig */ = {
         parse(cx, next, pos) {
             /* Latch onto OPENING delimiters: */
             if (next == 36 /* $ */ && cx.char(pos + 1) == 96 /* ` */) {
-                let startDelim = pos;
-                let lookaheadPos = pos + 2;
-                /* Eagerly capture characters until either EOL is reached or an ENDING delimiter is found: */
-                while (lookaheadPos < cx.end && (cx.char(lookaheadPos) != 96 || cx.char(lookaheadPos+1) != 36)) lookaheadPos++;
-                if (lookaheadPos >= cx.end) return -1; /* Ending delimiter not found. */
-
-                cx.addDelimiter(InlineLatexDelim, startDelim, startDelim + 2, true, false);
-                return cx.addDelimiter(InlineLatexDelim, lookaheadPos, lookaheadPos + 2, false, true);
+                return cx.addDelimiter(InlineLatexDelim, pos, pos + 2, true, false);
+            }
+            if (next == 96 /* ` */ && cx.char(pos + 1) == 36 /* $ */) {
+                return cx.addDelimiter(InlineLatexDelim, pos, pos + 2, false, true);
             }
             return -1;
-        }
+        },
+        before: "InlineCode"
     }],
     wrap: parseMixed(node => {
         return node.name === "InlineLatex" ? {parser: latexHighlightParser} : null
@@ -97,16 +94,16 @@ const BlockLaTeX = {
                 const startPos = cx.parsedPos;
 
                 while (line.text.trim() != "```") cx.nextLine();
-                if (line.text.trim() != "```") return false;
 
                 cx.addElement(cx.elt("Latex", startPos, cx.parsedPos - 1));
                 cx.addElement(cx.elt("LatexMark", cx.parsedPos, cx.parsedPos + line.text.length))
+                cx.nextLine(); // Must move past the block
                 return true;
             }
             return false;
-        }
+        },
+        before: "FencedCode"
     }],
-    after: "FencedCode",
     wrap: parseMixed(node => {
         return node.name === "Latex" ? {parser: latexHighlightParser} : null
     })
@@ -120,7 +117,7 @@ const CustomDefinition = {
     parseInline: [{
         name: "CustomDefinitionParser",
         parse(cx, next, pos) {
-            if (next == 38 /* & */ && cx.char(pos + 1) == 38 /* $ */) {
+            if (next == 38 /* & */ && cx.char(pos + 1) == 38 /* & */) {
                 return cx.addElement(cx.elt("Definition", pos, pos + 2));
             }
             return -1;
