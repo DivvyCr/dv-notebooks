@@ -2,8 +2,8 @@
 
 .book-select {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     margin-top: 2rem;
@@ -17,7 +17,7 @@
     "edit-icon title"
     "description description";
     grid-template-columns: minmax(0, auto) 1fr;
-    width: 47.5%;
+    width: 90%;
     box-sizing: border-box;
     cursor: pointer;
     padding: .25rem .75rem 0;
