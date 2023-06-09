@@ -86,6 +86,10 @@ button {
     all: unset;
 }
 
+.hidden {
+    display: none !important;
+}
+
 header {
     display: flex;
     flex-direction: row;
@@ -119,8 +123,11 @@ main {
     flex-direction: column;
     height: 100vh;
     width: var(--content-width);
-    padding: 2rem 0 0;
     box-sizing: border-box;
+}
+
+main.home {
+    padding: 2rem 0 0;
 }
 
 main > .content {
@@ -432,10 +439,6 @@ td.code-caption {
 .icon-button:hover {
     cursor: pointer;
     color: var(--gold-accent);
-}
-
-#edit-title {
-    margin-top: .5rem;
 }
 
 /* HTML Errors: */

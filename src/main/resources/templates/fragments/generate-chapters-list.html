@@ -1,8 +1,8 @@
 <!-- initialise recursive fragment -->
-<ul th:fragment="renderNav (entries, note)" th:replace="~{:: renderNavX (${entries}, ${note}, 0)}"></ul>
+<ul th:fragment="generateChapterList (entries, note)" th:replace="~{:: generateChapterListX (${entries}, ${note}, 0)}"></ul>
 
 <!-- recursive fragment -->
-<ul class="chapter-list" th:unless="${entries?.empty}" th:fragment="renderNavX (entries, note, depth)">
+<ul class="chapter-list" th:unless="${entries?.empty}" th:fragment="generateChapterListX (entries, note, depth)">
   <li th:id="${entry?.id}" th:each="entry : ${entries}">
     <th:block th:switch="${depth}">
       <a th:case="0" class="chapter-lvl-0" th:text="${entry?.title}"
@@ -15,6 +15,6 @@
 	 th:id="${note.id} == ${entry?.id} ? active-chapter : ''"
 	 th:href="|/read${entry?.link}|"></a>
     </th:block>
-    <ul th:replace="~{:: renderNavX (${entry?.children}, ${note}, ${depth}+1)}"></ul>
+    <ul th:replace="~{:: generateChapterListX (${entry?.children}, ${note}, ${depth}+1)}"></ul>
   </li>
 </ul>

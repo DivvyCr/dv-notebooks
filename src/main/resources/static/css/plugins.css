@@ -13,9 +13,15 @@
 
 /* CodeMirror: */
 
-#editor-with-preview {
+#editing-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 1rem;
+}
+
+#editing-workspace {
     position: relative;
-    height: 60vh;
     width: 100%;
     margin-top: 1rem;
 }
@@ -24,7 +30,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 100%;
     width: 100%;
     border-radius: .3rem;
 }
@@ -42,8 +47,71 @@
     overflow: scroll;
 }
 
+#edit-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.editing-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 0 1rem;
+    padding: .5rem .75rem;
+    border-radius: .3rem;
+    color: var(--highlight-foreground);
+    background-color: var(--highlight-background);
+}
+
+.editing-button:hover {
+    color: var(--blue-accent);
+    cursor: pointer;
+}
+
+.move-buttons-group {
+    display: grid;
+    margin: 1rem 0 0 0;
+    gap: 0.2rem;
+    grid-template-areas:
+	"up up"
+	"left right"
+	"down down";
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    font-size: 1rem;
+}
+
+.move-up {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: up;
+}
+
+.move-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: left;
+}
+
+.move-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: right;
+}
+
+.move-down {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: down;
+}
+
 .cm-editor {
-    height: 60vh;
+    height: inherit;
 }
 
 .cm-cursor {

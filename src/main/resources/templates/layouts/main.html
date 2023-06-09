@@ -22,7 +22,7 @@
 
 <nav id="chapter-navigation">
   <div layout:fragment="chapter-options"></div>
-  <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
+  <ul th:replace="~{fragments/generate-chapters-list.html :: generateChapterList (${navTree}, ${chapterObj})}"></ul>
 </nav>
 
 <nav id="screen-chapter-navigation">
@@ -33,7 +33,7 @@
     </div>
   </button>
   <div class="chapter-scroll">
-    <ul th:replace="~{fragments/book-navigation.html :: renderNav (${navTree}, ${chapterObj})}"></ul>
+    <ul th:replace="~{fragments/generate-chapters-list.html :: generateChapterList (${navTree}, ${chapterObj})}"></ul>
   </div>
   <div layout:fragment="chapter-options"></div>
 </nav>

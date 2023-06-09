@@ -1,57 +1,64 @@
-<html layout:decorate="~{layouts/main.html}" lang="en">
+<html layout:decorate="~{layouts/base.html}" lang="en">
 
-<div layout:fragment="chapter-options"
-     class="move-buttons-group">
-  <div class="move-up">
-    <button class="icon-button" id="move-up" type="button">
-      <i class="fa-solid fa-up-long"></i>
-    </button>
-  </div>
-  <div class="move-right">
-    <button class="icon-button move-right" id="move-in" type="button">
-      <i class="fa-solid fa-right-long"></i>
-    </button>
-  </div>
-  <div class="move-left">
-    <button class="icon-button move-left" id="move-out" type="button">
-      <i class="fa-solid fa-left-long"></i>
-    </button>
-  </div>
-  <div class="move-down">
-    <button class="icon-button move-down" id="move-down" type="button">
-      <i class="fa-solid fa-down-long"></i>
-    </button>
-  </div>
-</div>
+<main layout:fragment="main">
+  <nav id="chapter-navigation">
+    <ul th:replace="~{fragments/generate-chapters-list.html :: generateChapterList (${navTree}, ${chapterObj})}"></ul>
 
-<div layout:fragment="content" class="content">
-  <form method="POST" th:object="${chapterObj}">
-    <input id="edit-title" class="basic-input" type="text" th:field="*{title}" autofocus/>
-    <textarea id="edit-content" type="text" rows="5" th:field="*{mdContent}" style="display: none"></textarea>
-
-    <div id="editor-with-preview">
-      <div id="editor" style="visibility: visible;"></div>
-      <div id="editor-preview" style="visibility: hidden;"></div>
+    <div class="move-buttons-group">
+      <div class="move-up">
+        <button class="icon-button" id="move-up" type="button">
+          <i class="fa-solid fa-up-long"></i>
+        </button>
+      </div>
+      <div class="move-right">
+        <button class="icon-button move-right" id="move-in" type="button">
+          <i class="fa-solid fa-right-long"></i>
+        </button>
+      </div>
+      <div class="move-left">
+        <button class="icon-button move-left" id="move-out" type="button">
+          <i class="fa-solid fa-left-long"></i>
+        </button>
+      </div>
+      <div class="move-down">
+        <button class="icon-button move-down" id="move-down" type="button">
+          <i class="fa-solid fa-down-long"></i>
+        </button>
+      </div>
     </div>
+  </nav>
 
-    <input id="parent-id" type="hidden" th:field="*{parentID}"/>
-    <input id="preceding-id" type="hidden" th:field="*{precedingID}"/>
+  <div class="content">
+    <form method="POST" th:object="${chapterObj}">
+      <input id="parent-id" type="hidden" th:field="*{parentID}"/>
+      <input id="preceding-id" type="hidden" th:field="*{precedingID}"/>
+      <textarea id="edit-content" type="text" rows="5" th:field="*{mdContent}" style="display: none"></textarea>
 
-    <div class="edit-buttons-group">
-      <button class="icon-button" type="submit">
-        <i class="fa-solid fa-floppy-disk"></i>
-      </button>
-      <button class="icon-button" type="button" id="preview-button">
-        <i id="preview-icon" class="fa-solid fa-eye"></i>
-        <i id="no-preview-icon" class="fa-solid fa-eye-slash" style="display: none"></i>
-      </button>
-      <button class="icon-button" type="submit" id="delete-button"
-              th:formaction="|/delete/chapter?id=${chapterObj.id}|">
-        <i class="fa-solid fa-trash-can"></i>
-      </button>
-    </div>
-  </form>
-</div>
+      <div id="editing-header">
+        <input id="edit-title" class="basic-input" type="text" th:field="*{title}" autofocus/>
+
+        <div id="edit-buttons">
+          <button class="editing-button" type="submit">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+          <button class="editing-button" type="button" id="preview-button">
+            <i id="preview-icon" class="fa-solid fa-eye"></i>
+            <i id="no-preview-icon" class="fa-solid fa-eye-slash hidden"></i>
+          </button>
+          <button class="editing-button" type="submit" id="delete-button"
+                th:formaction="|/delete/chapter?id=${chapterObj.id}|">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+        </div>
+      </div>
+
+      <div id="editing-workspace">
+        <div id="editor"></div>
+        <div id="editor-preview" class="hidden"></div>
+      </div>
+    </form>
+  </div>
+</main>
 
 <th:block layout:fragment="extra-scripts">
   <script src="/js/codemirror-editor.bundle.js"></script>

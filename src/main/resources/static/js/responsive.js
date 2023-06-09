@@ -17,9 +17,17 @@ const navBut = document.getElementById("toggle-chapter-navigation");
 if (navBut) navBut.addEventListener('click', sidebarToggle);
 
 const navElt = document.getElementById("chapter-navigation");
-if (navElt) {
-    window.onload = () => { navElt.style.left = "calc((100vw - var(--content-width)) / 2 - " + navElt.offsetWidth + "px)"};
-    window.onresize = () => { navElt.style.left = "calc((100vw - var(--content-width)) / 2 - " + navElt.offsetWidth + "px)"};
+let navFunc = () => {}
+if (navElt) navFunc = () => { navElt.style.left = "calc((100vw - var(--content-width)) / 2 - " + navElt.offsetWidth + "px)" }
+
+const editorElt = document.getElementById("editor");
+const editorHeaderElt = document.getElementById("editing-header");
+let editorFunc = () => {}
+if (editorElt && editorHeaderElt) editorFunc = () => { editorElt.style.height = "calc(100vh - 2rem - "+ editorHeaderElt.offsetHeight +"px)" }
+
+window.onload = window.onresize = () => {
+    navFunc();
+    editorFunc();
 }
 
 // Enable KaTeX:

@@ -34,21 +34,9 @@ previewButton.addEventListener('click', function togglePreview() {
     // mde.togglePreview();
     generatePreview();
 
-    if (!isPreview) {
-        isPreview = true;
+    document.getElementById("editor-preview").classList.toggle("hidden");
+    document.getElementById("editor").classList.toggle("hidden");
 
-        document.getElementById("editor-preview").setAttribute("style", "visibility: visible");
-        document.getElementById("editor").setAttribute("style", "visibility: hidden");
-
-        document.getElementById("preview-icon").setAttribute("style", "display: none");
-        document.getElementById("no-preview-icon").removeAttribute("style");
-    } else {
-        isPreview = false;
-
-        document.getElementById("editor-preview").setAttribute("style", "visibility: hidden");
-        document.getElementById("editor").setAttribute("style", "visibility: visible");
-
-        document.getElementById("preview-icon").removeAttribute("style");
-        document.getElementById("no-preview-icon").setAttribute("style", "display: none");
-    }
+    document.getElementById("preview-icon").classList.toggle("hidden");
+    document.getElementById("no-preview-icon").classList.toggle("hidden");
 });
