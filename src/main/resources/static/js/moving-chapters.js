@@ -19,7 +19,7 @@ let movableElementText = document.getElementById("active-chapter");
 
 window.addEventListener("load", (event) => {
     // init parent-id
-    if (movableElement.parentElement.tagName.toLowerCase() === "ul") {
+    if (movableElement.parentElement.parentElement.tagName.toLowerCase() === "li") {
         parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
     } else {
         parentIdTextElement.removeAttribute("value");
@@ -63,7 +63,7 @@ var outButton = document.getElementById("move-out");
 var downButton = document.getElementById("move-down");
 
 function updateTextElements() {
-    if (movableElement.parentElement.tagName.toLowerCase() === "ul") {
+    if (movableElement.parentElement.parentElement.tagName.toLowerCase() === "li") {
         parentIdTextElement.setAttribute("value", movableElement.parentElement.parentElement.id);
     } else {
         parentIdTextElement.removeAttribute("value");

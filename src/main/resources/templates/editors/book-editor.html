@@ -2,23 +2,23 @@
 <main layout:fragment="main">
   <div class="content">
     <form method="POST" th:object="${bookObj}">
-      <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 1rem">
-        <input class="basic-input spaced-input" type="text" value="*{code}" placeholder="Code" th:field="*{code}"/>
-        <input class="basic-input spaced-input" type="text" value="*{title}" placeholder="Title" th:field="*{title}"
-               autofocus/>
+      <div id="editing-header">
+        <input class="basic-input" style="max-width: 25%" type="text" value="*{code}" placeholder="Code"
+               th:field="*{code}"/>
+        <input class="basic-input" style="margin-left: 1rem" type="text" value="*{title}" placeholder="Title"
+               th:field="*{title}" autofocus/>
+        <div id="edit-buttons">
+          <button class="editing-button" type="submit">
+            <i class="fa-solid fa-floppy-disk"></i>
+          </button>
+          <button class="editing-button" type="submit" id="delete-button" th:formaction="|/delete/book?id=${bookObj.id}|">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
       </div>
-      <input class="basic-input spaced-input" type="text" value="*{description}" placeholder="Description"
-             th:field="*{description}"/>
 
-      <div class="edit-buttons-group">
-        <button class="icon-button" type="submit">
-          <i class="fa-solid fa-floppy-disk"></i>
-        </button>
-        <button class="icon-button" type="submit" id="delete-button"
-                th:formaction="|/delete/book?id=${bookObj.id}|">
-          <i class="fa-solid fa-trash-can"></i>
-        </button>
-      </div>
+      <textarea class="basic-input" style="margin-top: 1rem; resize: none" type="text" value="*{description}" rows="3"
+                placeholder="Description" th:field="*{description}"></textarea>
     </form>
   </div>
 </main>
