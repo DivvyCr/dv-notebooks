@@ -27,7 +27,8 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-crypto:6.0.2'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 
-//	implementation 'com.google.cloud:spring-cloud-gcp-starter-sql-postgresql:4.4.0'
+	implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager:4.4.0'
+	implementation 'com.google.cloud:spring-cloud-gcp-starter-sql-postgresql:4.4.0'
 	implementation 'org.postgresql:postgresql:42.6.0'
 	runtimeOnly 'org.postgresql:postgresql'
 
