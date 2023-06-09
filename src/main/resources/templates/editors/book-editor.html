@@ -1,22 +1,25 @@
 <html layout:decorate="~{layouts/base.html}" lang="en">
-<div layout:fragment="content"
-     class="content">
-  <form method="POST" th:object="${bookObj}">
-    <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 1rem">
-      <input class="basic-input spaced-input" type="text" value="*{code}" placeholder="Code" th:field="*{code}"/>
-      <input class="basic-input spaced-input" type="text" value="*{title}" placeholder="Title" th:field="*{title}" autofocus/>
-    </div>
-    <input class="basic-input spaced-input" type="text" value="*{description}" placeholder="Description" th:field="*{description}"/>
+<main layout:fragment="main">
+  <div class="content">
+    <form method="POST" th:object="${bookObj}">
+      <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 1rem">
+        <input class="basic-input spaced-input" type="text" value="*{code}" placeholder="Code" th:field="*{code}"/>
+        <input class="basic-input spaced-input" type="text" value="*{title}" placeholder="Title" th:field="*{title}"
+               autofocus/>
+      </div>
+      <input class="basic-input spaced-input" type="text" value="*{description}" placeholder="Description"
+             th:field="*{description}"/>
 
-    <div class="edit-buttons-group">
-      <button class="icon-button" type="submit">
-        <i class="fa-solid fa-floppy-disk"></i>
-      </button>
-      <button class="icon-button" type="submit" id="delete-button"
-              th:formaction="|/delete/book?id=${bookObj.id}|">
-        <i class="fa-solid fa-trash-can"></i>
-      </button>
-    </div>
-  </form>
-</div>
+      <div class="edit-buttons-group">
+        <button class="icon-button" type="submit">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button class="icon-button" type="submit" id="delete-button"
+                th:formaction="|/delete/book?id=${bookObj.id}|">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
 </html>

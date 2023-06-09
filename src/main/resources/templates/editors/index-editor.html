@@ -3,7 +3,7 @@
 <main layout:fragment="main">
   <div class="content">
     <form method="POST">
-      <textarea id="edit-content" type="text" rows="5" th:utext="${curContent}" style="display: none"></textarea>
+      <textarea id="edit-content" name="new-content" type="text" rows="5" th:utext="${curContent}" style="display: none"></textarea>
 
       <div id="editing-header">
         <h1 id="welcome" style="line-height: 0.75; margin: 0">Welcome!</h1>
