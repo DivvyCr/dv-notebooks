@@ -1,27 +1,31 @@
 <html layout:decorate="~{layouts/base.html}" lang="en">
 
-<div layout:fragment="content"
-     class="content editing">
-  <h1 id="welcome">Welcome!</h1>
-  <form method="POST">
-    <textarea id="edit-content" type="text" rows="5" th:utext="${curContent}" style="display: none"></textarea>
+<main layout:fragment="main">
+  <div class="content">
+    <form method="POST">
+      <textarea id="edit-content" type="text" rows="5" th:utext="${curContent}" style="display: none"></textarea>
 
-    <div id="editing-workspace">
-      <div id="editor" style="visibility: visible;"></div>
-      <div id="editor-preview" style="visibility: hidden;"></div>
-    </div>
+      <div id="editing-header">
+        <h1 id="welcome" style="line-height: 0.75; margin: 0">Welcome!</h1>
 
-    <div class="edit-buttons-group">
-      <button class="icon-button" type="submit">
-        <i class="fa-solid fa-floppy-disk"></i>
-      </button>
-      <button class="icon-button" type="button" id="preview-button">
-        <i id="preview-icon" class="fa-solid fa-eye"></i>
-        <i id="no-preview-icon" class="fa-solid fa-eye-slash" style="display: none"></i>
-      </button>
-    </div>
-  </form>
-</div>
+        <div id="edit-buttons">
+          <button class="editing-button" type="submit">
+            <i class="fa-solid fa-floppy-disk"></i>
+          </button>
+          <button class="editing-button" type="button" id="preview-button">
+            <i id="preview-icon" class="fa-solid fa-eye"></i>
+            <i id="no-preview-icon" class="fa-solid fa-eye-slash hidden"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="editing-workspace">
+        <div id="editor"></div>
+        <div id="editor-preview" class="hidden"></div>
+      </div>
+    </form>
+  </div>
+</main>
 
 <th:block layout:fragment="extra-scripts">
   <script src="/js/codemirror-editor.bundle.js"></script>
