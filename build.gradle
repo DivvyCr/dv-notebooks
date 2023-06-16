@@ -2,11 +2,10 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.0'
 	id 'io.spring.dependency-management' version '1.1.0'
-	id 'com.github.johnrengelman.shadow' version '7.1.2' // To build an Uber-Jar (aka. Fat Jar)
 }
 
 group = 'com.dvc'
-version = '0.1-BETA'
+version = '1.0.0'
 sourceCompatibility = '17'
 
 repositories {
@@ -27,8 +26,6 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-crypto:6.0.2'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 
-	implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager:4.4.0'
-	implementation 'com.google.cloud:spring-cloud-gcp-starter-sql-postgresql:4.4.0'
 	implementation 'org.postgresql:postgresql:42.6.0'
 	runtimeOnly 'org.postgresql:postgresql'
 
